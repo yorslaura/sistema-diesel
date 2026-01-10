@@ -33,9 +33,9 @@ export default function Home() {
     if (error) {
       alert("Error: " + error.message)
     } else {
-      // 3. Abrir WhatsApp automáticamente
-      const mensaje = `*ALICAR AUTOMOTRIZ*%0A*Orden de Servicio*%0A%0A*Cliente:* ${cliente}%0A*Placa:* ${placa}%0A*Falla:* ${falla}${fotoUrl ? `%0A*Foto:* ${fotoUrl}` : ''}`
-      window.open(`https://wa.me/?text=${mensaje}`, '_blank')
+      // 3. Abrir WhatsApp con el link de la foto
+    const mensaje = `*ALICAR AUTOMOTRIZ*%0A*Orden de Servicio*%0A%0A*Cliente:* ${cliente}%0A*Placa:* ${placa}%0A*Falla:* ${falla}${fotoUrl ? `%0A%0A*Ver Foto:* ${fotoUrl}` : ''}`
+    window.open(`https://wa.me/?text=${mensaje}`, '_blank')
       e.target.reset()
     }
     setEnviando(false)
