@@ -7,9 +7,16 @@ export default function Home() {
   const [registros, setRegistros] = useState<any[]>([])
 
   const cargarDatos = async () => {
-    const { data } = await supabase.from('ordenes').select('*').order('created_at', { ascending: false })
-    if (data) setRegistros(data)
-  }
+    // Quitamos el .order(...) para que no falle por la columna que falta
+    const { data, error } = await supabase
+      .from('ordenes')
+      .select('*');
+
+    if (error) {
+      console.error("Error:", error.message);
+    }
+    if (data) setRegistros(data);
+  };
 
   useEffect(() => { cargarDatos() }, [])
 
