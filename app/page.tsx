@@ -7,16 +7,10 @@ export default function Home() {
   const [registros, setRegistros] = useState<any[]>([])
 
   const cargarDatos = async () => {
-    // Quitamos el .order(...) para que no falle por la columna que falta
-    const { data, error } = await supabase
-      .from('ordenes')
-      .select('*');
-
-    if (error) {
-      console.error("Error:", error.message);
-    }
-    if (data) setRegistros(data);
-  };
+    const { data, error } = await supabase.from('ordenes').select('*')
+    if (error) console.error("Error cargando:", error.message)
+    if (data) setRegistros(data)
+  }
 
   useEffect(() => { cargarDatos() }, [])
 
@@ -53,9 +47,9 @@ export default function Home() {
         <h1 className="text-xl font-bold text-center mb-6 text-blue-900">ALICAR AUTOMOTRIZ</h1>
         
         <form onSubmit={guardar} className="space-y-4">
-          <input name="cliente" placeholder="Cliente" className="w-full p-2 border rounded" required />
-          <input name="placa" placeholder="Placa" className="w-full p-2 border rounded" required />
-          <textarea name="falla" placeholder="Falla" className="w-full p-2 border rounded" required />
+          <input name="cliente" placeholder="Nombre completo del cliente" className="w-full p-2 border rounded" required />
+          <input name="placa" placeholder="Placa (ej: ABC-123)" className="w-full p-2 border rounded" required />
+          <textarea name="falla" placeholder="Detalles de la falla..." className="w-full p-2 border rounded" required />
           <input type="file" id="foto" accept="image/*" capture="environment" className="w-full" />
           <button disabled={enviando} className="w-full bg-green-600 text-white p-3 rounded font-bold">
             {enviando ? 'Guardando...' : 'GUARDAR Y ENVIAR'}
@@ -63,18 +57,22 @@ export default function Home() {
         </form>
 
         <div className="mt-10">
-          <h2 className="font-bold border-b-2 mb-4">HISTORIAL RECIENTE</h2>
+          <h2 className="font-bold border-b-2 mb-4 text-gray-700">HISTORIAL RECIENTE</h2>
           <div className="space-y-4">
-            {registros.map((r) => (
-              <div key={r.id} className="p-3 bg-gray-50 rounded border">
-                <div className="flex justify-between font-bold text-sm">
-                  <span>{r.cliente}</span>
-                  <span className="text-blue-600">{r.placa}</span>
+            {registros.length === 0 ? (
+              <p className="text-gray-500 text-sm italic text-center">No hay registros aún.</p>
+            ) : (
+              registros.map((r) => (
+                <div key={r.id} className="p-3 bg-gray-50 rounded border flex flex-col gap-1">
+                  <div className="flex justify-between font-bold text-sm text-gray-800">
+                    <span>{r.cliente}</span>
+                    <span className="text-blue-600">{r.placa}</span>
+                  </div>
+                  <p className="text-sm text-gray-600 italic">{r.falla}</p>
+                  {r.foto_url && <a href={r.foto_url} target="_blank" className="text-xs text-blue-500 underline">Ver Foto del vehículo</a>}
                 </div>
-                <p className="text-sm text-gray-600 italic">{r.falla}</p>
-                {r.foto_url && <a href={r.foto_url} target="_blank" className="text-xs text-blue-500 underline">Ver Foto</a>}
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
