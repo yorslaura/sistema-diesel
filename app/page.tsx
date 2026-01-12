@@ -106,7 +106,7 @@ function FormularioRecepcion({ user, alTerminar }: any) {
     const { error: errO } = await supabase.from('ordenes').insert([{
       vehiculo_id: vehiculo.id,
       creado_por: user.id,
-      falla_reportada: fallaVehiculo,
+      falla_cliente: fallaVehiculo,
       estado: 'COTIZACION'
     }])
 
