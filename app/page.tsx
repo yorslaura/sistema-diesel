@@ -3,112 +3,180 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function Home() {
-  const [enviando, setEnviando] = useState(false)
-  const [registros, setRegistros] = useState<any[]>([])
-  const [esAdmin, setEsAdmin] = useState(false)
+  const [user, setUser] = useState<any>(null)
   const [pin, setPin] = useState('')
+  const [seccion, setSeccion] = useState('menu')
+  const [ordenes, setOrdenes] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // --- SISTEMA DE LOGIN ---
+  const handleLogin = async () => {
+    const { data } = await supabase.from('personal').select('*').eq('pin', pin).eq('activo', true).single()
+    if (data) { setUser(data); cargarDatos() } 
+    else { alert("PIN Incorrecto") }
+  }
 
   const cargarDatos = async () => {
-    const { data, error } = await supabase
-      .from('ordenes')
-      .select('*')
-      .order('id', { ascending: false }) 
-    if (data) setRegistros(data)
+    const { data } = await supabase.from('ordenes').select('*, vehiculos(*)').order('id', { ascending: false })
+    if (data) setOrdenes(data)
   }
 
-  useEffect(() => { cargarDatos() }, [])
-
-  const verificarPin = () => {
-    if (pin === '1212') {
-      setEsAdmin(true)
-    } else {
-      alert("PIN Incorrecto")
-    }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-blue-900 flex items-center justify-center p-4 text-black">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
+          <h1 className="text-3xl font-black mb-6 text-blue-900 uppercase">ALICAR</h1>
+          <p className="mb-4 font-bold text-gray-500">INGRESA TU PIN DE ACCESO</p>
+          <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} className="w-full p-4 border-2 rounded-xl text-center text-2xl mb-4" placeholder="****" />
+          <button onClick={handleLogin} className="w-full bg-orange-500 text-white p-4 rounded-xl font-black text-xl hover:bg-orange-600">ENTRAR</button>
+        </div>
+      </div>
+    )
   }
 
+  return (
+    <div className="min-h-screen bg-gray-100 text-black">
+      {/* HEADER */}
+      <nav className="bg-white p-4 shadow-md flex justify-between items-center sticky top-0 z-50">
+        <div>
+          <h1 className="font-black text-blue-900 text-xl italic">ALICAR APP</h1>
+          <p className="text-[10px] font-bold text-gray-400 uppercase">{user.nombre} | {user.rol}</p>
+        </div>
+        <button onClick={() => setUser(null)} className="text-xs bg-gray-200 px-3 py-1 rounded font-bold">SALIR</button>
+      </nav>
+
+      <div className="max-w-4xl mx-auto p-4 space-y-4">
+        
+        {/* BOTONES DE ACCIÓN RÁPIDA */}
+        <div className="grid grid-cols-2 gap-4">
+          <button onClick={() => setSeccion('nueva')} className="bg-blue-600 text-white p-4 rounded-xl font-bold shadow-lg uppercase text-sm">📥 Nueva Recepción</button>
+          <button onClick={() => setSeccion('lista')} className="bg-white text-blue-600 p-4 rounded-xl font-bold shadow-lg uppercase text-sm border-2 border-blue-600">📋 Ver Órdenes</button>
+        </div>
+
+        {/* CONTENIDO DINÁMICO */}
+        {seccion === 'nueva' && <FormularioRecepcion user={user} alTerminar={() => {setSeccion('lista'); cargarDatos()}} />}
+        {seccion === 'lista' && <ListaOrdenes ordenes={ordenes} user={user} onUpdate={cargarDatos} />}
+      </div>
+    </div>
+  )
+}
+
+// --- COMPONENTE: FORMULARIO DE RECEPCIÓN ---
+function FormularioRecepcion({ user, alTerminar }: any) {
+  const [enviando, setEnviando] = useState(false)
+
+  // AQUÍ EMPIEZA LO QUE TIENES QUE REEMPLAZAR (la función guardar)
   const guardar = async (e: any) => {
     e.preventDefault()
     setEnviando(true)
     const fd = new FormData(e.target)
-    const foto = (document.getElementById('foto') as HTMLInputElement).files?.[0]
-    let url = ''
 
-    if (foto) {
-      const nom = `${Date.now()}-${fd.get('placa')}.jpg`
-      const { data } = await supabase.storage.from('fotos-camiones').upload(nom, foto)
-      if (data) url = supabase.storage.from('fotos-camiones').getPublicUrl(nom).data.publicUrl
+    const nombreCliente = fd.get('cliente')?.toString() || ''
+    const telefonoCliente = fd.get('tel')?.toString() || ''
+    const placaVehiculo = fd.get('placa')?.toString().toUpperCase() || ''
+    const modeloVehiculo = fd.get('modelo')?.toString() || ''
+    const fallaVehiculo = fd.get('falla')?.toString() || ''
+
+    // 1. Registrar cliente
+    const { data: cliente, error: errC } = await supabase.from('clientes').insert([{ 
+      nombre: nombreCliente, 
+      telefono: telefonoCliente 
+    }]).select().single()
+
+    if (errC || !cliente) {
+      console.error("Error Cliente:", errC)
+      setEnviando(false)
+      return alert("Error al crear cliente: " + errC?.message)
     }
 
-    await supabase.from('ordenes').insert([{ 
-      cliente: fd.get('cliente'), 
-      placa: fd.get('placa'), 
-      falla: fd.get('falla'), 
-      foto_url: url 
+    // 2. Registrar Vehículo
+    const { data: vehiculo, error: errV } = await supabase.from('vehiculos').insert([{
+      placa: placaVehiculo,
+      modelo: modeloVehiculo,
+      cliente_id: cliente.id
+    }]).select().single()
+
+    if (errV || !vehiculo) {
+      console.error("Error Vehiculo:", errV)
+      setEnviando(false)
+      return alert("Error al crear vehículo: " + errV?.message)
+    }
+
+    // 3. Crear la Orden
+    const { error: errO } = await supabase.from('ordenes').insert([{
+      vehiculo_id: vehiculo.id,
+      creado_por: user.id,
+      falla_reportada: fallaVehiculo,
+      estado: 'COTIZACION'
     }])
 
-    const msg = `*ALICAR*%0A*Cliente:* ${fd.get('cliente')}%0A*Placa:* ${fd.get('placa')}${url ? `%0A*Foto:* ${url}` : ''}`
-    window.open(`https://wa.me/?text=${msg}`, '_blank')
-    e.target.reset()
+    if (errO) {
+      console.error("Error Orden:", errO)
+      alert("Error al crear la orden: " + errO.message)
+    } else {
+      alert("✅ Orden creada con éxito")
+      alTerminar()
+    }
+    
     setEnviando(false)
-    cargarDatos()
+  }
+  // AQUÍ TERMINA LO QUE REEMPLAZAS
+
+  return (
+    // ... el resto del formulario se queda igual ...
+    <form onSubmit={guardar} className="bg-white p-6 rounded-2xl shadow-md space-y-4 border-t-8 border-blue-600">
+      <h2 className="font-black text-lg border-b pb-2 uppercase text-blue-800">Paso 1: Recepción del Camión</h2>
+      <input name="cliente" placeholder="Nombre del Cliente" className="w-full p-3 border rounded-lg bg-gray-50 font-bold" required />
+      <input name="tel" placeholder="WhatsApp (Ej: +51999...)" className="w-full p-3 border rounded-lg bg-gray-50" required />
+      <div className="flex gap-2">
+        <input name="placa" placeholder="Placa" className="w-1/2 p-3 border rounded-lg bg-gray-50 uppercase font-black" required />
+        <input name="modelo" placeholder="Modelo (Ej: Volvo FMX)" className="w-1/2 p-3 border rounded-lg bg-gray-50" required />
+      </div>
+      <textarea name="falla" placeholder="¿Qué le falla al vehículo?" className="w-full p-3 border rounded-lg bg-yellow-50 h-24" required />
+      <button disabled={enviando} className="w-full bg-blue-700 text-white p-4 rounded-xl font-black uppercase shadow-xl">
+        {enviando ? 'Guardando...' : 'Crear Orden de Servicio'}
+      </button>
+    </form>
+  )
+}
+
+// --- COMPONENTE: LISTA DE ÓRDENES ---
+function ListaOrdenes({ ordenes, user, onUpdate }: any) {
+  const actualizarEstado = async (id: number, nuevoEstado: string) => {
+    await supabase.from('ordenes').update({ estado: nuevoEstado, mecanico_id: user.id }).eq('id', id)
+    onUpdate()
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 pb-20 text-black">
-      <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-200">
-        <h1 className="text-xl font-bold text-center mb-6 text-blue-900 border-b pb-4 uppercase">Alicar Automotriz</h1>
-        
-        <form onSubmit={guardar} className="space-y-4">
-          <input name="cliente" placeholder="Nombre del cliente" className="w-full p-2 border rounded bg-white" required />
-          <input name="placa" placeholder="Placa" className="w-full p-2 border rounded bg-white" required />
-          <textarea name="falla" placeholder="Falla detectada..." className="w-full p-2 border rounded bg-white" required />
+    <div className="space-y-4">
+      <h2 className="font-black text-gray-400 uppercase text-xs tracking-widest">Órdenes en proceso</h2>
+      {ordenes.map((o: any) => (
+        <div key={o.id} className="bg-white p-5 rounded-2xl shadow-md border-l-8 border-orange-500">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <span className="text-[10px] bg-gray-800 text-white px-2 py-0.5 rounded-full font-bold">ORDEN #{o.id}</span>
+              <h3 className="font-black text-lg text-blue-900 uppercase mt-1">{o.vehiculos?.placa}</h3>
+            </div>
+            <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase ${o.estado === 'LISTO' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+              {o.estado}
+            </span>
+          </div>
           
-          <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-            <label className="text-xs font-bold text-blue-800 block mb-2">FOTO DEL VEHÍCULO:</label>
-            <input type="file" id="foto" accept="image/*" capture="environment" className="w-full text-sm" />
-          </div>
-
-          <button disabled={enviando} className="w-full bg-green-600 text-white p-4 rounded-xl font-bold shadow-md">
-            {enviando ? 'GUARDANDO...' : '💾 GUARDAR Y ENVIAR'}
-          </button>
-        </form>
-
-        <div className="mt-12 border-t pt-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="font-extrabold text-gray-800">📋 HISTORIAL</h2>
-            {!esAdmin && (
-              <div className="flex gap-1">
-                <input 
-                  type="password" 
-                  placeholder="PIN" 
-                  className="w-16 p-1 border rounded text-center text-xs bg-gray-50"
-                  onChange={(e) => setPin(e.target.value)}
-                />
-                <button onClick={verificarPin} className="text-[10px] bg-blue-600 text-white px-2 py-1 rounded font-bold">ENTRAR</button>
-              </div>
+          <p className="text-sm text-gray-600 mb-3 font-medium"><strong>Falla:</strong> {o.falla_reportada}</p>
+          
+          <div className="flex gap-2 border-t pt-4 mt-2">
+            {o.estado === 'COTIZACION' && user.rol !== 'RECEPCION' && (
+              <button onClick={() => actualizarEstado(o.id, 'EN_TRABAJO')} className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg font-bold text-xs uppercase">🛠️ Tomar para Reparar</button>
             )}
-          </div>
-
-          <div className="space-y-4">
-            {!esAdmin ? (
-              <p className="text-center text-gray-400 text-xs italic">Ingresa el PIN (1212) para ver registros</p>
-            ) : (
-              registros.map((r) => (
-                <div key={r.id} className="p-4 bg-white rounded-lg border-l-4 border-blue-600 shadow-sm border border-gray-200">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="font-bold text-gray-900 uppercase text-sm">{r.cliente}</span>
-                    <span className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">{r.placa}</span>
-                  </div>
-                  <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded">{r.falla}</p>
-                  {r.foto_url && (
-                    <a href={r.foto_url} target="_blank" className="inline-block mt-3 text-[10px] font-bold text-blue-600 underline">📸 VER FOTO</a>
-                  )}
-                </div>
-              ))
+            {o.estado === 'EN_TRABAJO' && user.rol !== 'RECEPCION' && (
+              <button onClick={() => actualizarEstado(o.id, 'LISTO')} className="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-xs uppercase">✅ Terminar Trabajo</button>
+            )}
+            {o.estado === 'LISTO' && (
+              <button className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg font-bold text-xs uppercase">📱 Avisar Cliente</button>
             )}
           </div>
         </div>
-      </div>
+      ))}
     </div>
   )
 }
