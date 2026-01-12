@@ -36,7 +36,7 @@ export default function Home() {
 
   // 3. LOGICA DE NEGOCIO
   const handleLogin = async () => {
-    const { data, error } = await supabase.from('usuarios').select('*').eq('pin', pin).single()
+    const { data, error } = await supabase.from('personal').select('*').eq('pin', pin).single()
     if (data) setUser(data)
     else alert("PIN Incorrecto")
   }
