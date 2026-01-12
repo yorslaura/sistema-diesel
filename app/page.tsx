@@ -1,241 +1,280 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+// CONFIGURACIÓN DE SUPABASE (Asegúrate de que estas variables sean las tuyas)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function Home() {
+  // 1. ESTADOS (DATOS)
   const [user, setUser] = useState<any>(null)
   const [pin, setPin] = useState('')
-  const [seccion, setSeccion] = useState('menu')
+  const [seccion, setSeccion] = useState('recepcion') // 'recepcion' o 'bodega'
   const [ordenes, setOrdenes] = useState<any[]>([])
+  const [productos, setProductos] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
-const [productos, setProductos] = useState<any[]>([]); // Agrega esto donde están los otros useState
-// Función para cambiar el estado (de COTIZACION a EN TRABAJO, etc.)
-const cambiarEstado = async (id: number, nuevoEstado: string) => {
-  const { error } = await supabase
-    .from('ordenes')
-    .update({ estado: nuevoEstado, mecanico_id: user.id })
-    .eq('id', id)
-
-  if (error) alert("Error al cambiar estado")
-  cargarDatos() // Esto refresca la lista automáticamente
-}
-
-// Función para cargar los productos de la bodega
-const cargarProductos = async () => {
-  const { data } = await supabase.from('productos').select('*')
-  if (data) setProductos(data)
-}
-const agregarRepuesto = async (ordenId: any, productoId: any) => {
-  const prod = productos.find((p: any) => p.id === parseInt(productoId))
-  if (!prod || prod.stock <= 0) return alert("Sin stock")
-
-  await supabase.from('detalles_orden').insert([{
-    orden_id: ordenId,
-    producto_id: productoId,
-    cantidad: 1,
-    precio_unitario: prod.p_venta
-  }])
-
-  await supabase.from('productos').update({ stock: prod.stock - 1 }).eq('id', productoId)
   
-  alert("Repuesto agregado")
-  cargarDatos()
-}
-  // --- SISTEMA DE LOGIN ---
-  const handleLogin = async () => {
-    const { data } = await supabase.from('personal').select('*').eq('pin', pin).eq('activo', true).single()
-    if (data) { setUser(data); cargarDatos() } 
-    else { alert("PIN Incorrecto") }
-  }
+  // Formulario para nuevos productos en bodega
+  const [prodForm, setProdForm] = useState({ nombre: '', p_venta: 0, stock: 0 })
 
+  // 2. FUNCIONES DE CARGA
   const cargarDatos = async () => {
-    const { data } = await supabase.from('ordenes').select('*, vehiculos(*)').order('id', { ascending: false })
-    if (data) setOrdenes(data)
+    setLoading(true)
+    const { data: ords } = await supabase.from('ordenes').select('*').order('created_at', { ascending: false })
+    const { data: prods } = await supabase.from('productos').select('*').order('nombre')
+    if (ords) setOrdenes(ords)
+    if (prods) setProductos(prods)
+    setLoading(false)
   }
 
+  useEffect(() => {
+    if (user) cargarDatos()
+  }, [user])
+
+  // 3. LOGICA DE NEGOCIO
+  const handleLogin = async () => {
+    const { data, error } = await supabase.from('usuarios').select('*').eq('pin', pin).single()
+    if (data) setUser(data)
+    else alert("PIN Incorrecto")
+  }
+
+  const cambiarEstado = async (id: number, nuevoEstado: string) => {
+    await supabase.from('ordenes').update({ estado: nuevoEstado, mecanico_id: user.id }).eq('id', id)
+    cargarDatos()
+  }
+
+  const guardarProducto = async () => {
+    if (!prodForm.nombre || prodForm.p_venta <= 0) return alert("Completa los datos")
+    await supabase.from('productos').insert([prodForm])
+    setProdForm({ nombre: '', p_venta: 0, stock: 0 })
+    cargarDatos()
+    alert("Producto guardado")
+  }
+
+  const agregarRepuesto = async (ordenId: string, productoId: string) => {
+    const prod = productos.find((p: any) => p.id === parseInt(productoId))
+    if (!prod || prod.stock <= 0) return alert("Sin stock disponible")
+
+    // Insertar en detalles
+    await supabase.from('detalles_orden').insert([{
+      orden_id: ordenId,
+      producto_id: productoId,
+      cantidad: 1,
+      precio_unitario: prod.p_venta
+    }])
+
+    // Restar stock
+    await supabase.from('productos').update({ stock: prod.stock - 1 }).eq('id', productoId)
+
+    // Actualizar total de la orden
+    const ordenActual = ordenes.find((o: any) => o.id === ordenId)
+    await supabase.from('ordenes').update({ total_orden: (ordenActual.total_orden || 0) + prod.p_venta }).eq('id', ordenId)
+
+    alert("Repuesto añadido")
+    cargarDatos()
+  }
+
+  // --- VISTA DE LOGIN ---
   if (!user) {
     return (
-      <div className="min-h-screen bg-blue-900 flex items-center justify-center p-4 text-black">
-        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
-          <h1 className="text-3xl font-black mb-6 text-blue-900 uppercase">ALICAR</h1>
-          <p className="mb-4 font-bold text-gray-500">INGRESA TU PIN DE ACCESO</p>
-          <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} className="w-full p-4 border-2 rounded-xl text-center text-2xl mb-4" placeholder="****" />
-          <button onClick={handleLogin} className="w-full bg-orange-500 text-white p-4 rounded-xl font-black text-xl hover:bg-orange-600">ENTRAR</button>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center">
+          <h1 className="text-3xl font-bold mb-6 text-blue-600">🚛 Sistema Diesel</h1>
+          <input 
+            type="password" placeholder="Ingresa tu PIN" 
+            className="w-full p-4 border rounded-xl mb-4 text-center text-2xl"
+            value={pin} onChange={(e) => setPin(e.target.value)}
+          />
+          <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold">ENTRAR</button>
         </div>
       </div>
     )
   }
 
+  // --- VISTA PRINCIPAL (LOGUEADO) ---
   return (
-    <div className="min-h-screen bg-gray-100 text-black">
-      {/* HEADER */}
-      <nav className="bg-white p-4 shadow-md flex justify-between items-center sticky top-0 z-50">
-        <div>
-          <h1 className="font-black text-blue-900 text-xl italic">ALICAR APP</h1>
-          <p className="text-[10px] font-bold text-gray-400 uppercase">{user.nombre} | {user.rol}</p>
-        </div>
-        <button onClick={() => setUser(null)} className="text-xs bg-gray-200 px-3 py-1 rounded font-bold">SALIR</button>
-      </nav>
+    <main className="min-h-screen bg-gray-50 p-4 pb-20">
+      
+      {/* NAVEGACIÓN PRINCIPAL */}
+      <div className="flex gap-2 mb-6 bg-white p-2 rounded-2xl shadow-sm">
+        <button 
+          onClick={() => setSeccion('recepcion')}
+          className={`flex-1 p-3 rounded-xl font-bold transition ${seccion === 'recepcion' ? 'bg-blue-600 text-white' : 'text-gray-500'}`}
+        >
+          🛠️ Taller
+        </button>
+        <button 
+          onClick={() => setSeccion('bodega')}
+          className={`flex-1 p-3 rounded-xl font-bold transition ${seccion === 'bodega' ? 'bg-blue-600 text-white' : 'text-gray-500'}`}
+        >
+          📦 Bodega
+        </button>
+        <button onClick={() => setUser(null)} className="p-3 text-red-500 font-bold">Salir</button>
+      </div>
 
-      <div className="max-w-4xl mx-auto p-4 space-y-4">
-        
-        {/* BOTONES DE ACCIÓN RÁPIDA */}
-        <div className="grid grid-cols-2 gap-4">
-          <button onClick={() => setSeccion('nueva')} className="bg-blue-600 text-white p-4 rounded-xl font-bold shadow-lg uppercase text-sm">📥 Nueva Recepción</button>
-          <button onClick={() => setSeccion('lista')} className="bg-white text-blue-600 p-4 rounded-xl font-bold shadow-lg uppercase text-sm border-2 border-blue-600">📋 Ver Órdenes</button>
+      {/* SECCIÓN 1: TALLER Y RECEPCIÓN */}
+      {seccion === 'recepcion' && (
+        <div className="space-y-6">
+          <RegistroVehiculo onUpdate={cargarDatos} />
+          <ListaOrdenes 
+            ordenes={ordenes} 
+            user={user} 
+            cambiarEstado={cambiarEstado} 
+            agregarRepuesto={agregarRepuesto} 
+            productos={productos}
+          />
         </div>
+      )}
 
-        {/* CONTENIDO DINÁMICO */}
-        {seccion === 'nueva' && <FormularioRecepcion user={user} alTerminar={() => {setSeccion('lista'); cargarDatos()}} />}
-        {seccion === 'lista' && <ListaOrdenes ordenes={ordenes} user={user}  cambiarEstado={cambiarEstado}  agregarRepuesto={agregarRepuesto}  productos={productos} onUpdate={cargarDatos} />}
+      {/* SECCIÓN 2: BODEGA e INVENTARIO */}
+      {seccion === 'bodega' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
+            <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
+            <div className="grid gap-3">
+              <input 
+                type="text" placeholder="Nombre (Ej: Filtro de Aceite)" 
+                className="p-3 border rounded-xl"
+                value={prodForm.nombre} onChange={(e) => setProdForm({...prodForm, nombre: e.target.value})}
+              />
+              <div className="flex gap-2">
+                <input 
+                  type="number" placeholder="Precio S/" 
+                  className="flex-1 p-3 border rounded-xl"
+                  value={prodForm.p_venta || ''} onChange={(e) => setProdForm({...prodForm, p_venta: parseFloat(e.target.value)})}
+                />
+                <input 
+                  type="number" placeholder="Stock" 
+                  className="flex-1 p-3 border rounded-xl"
+                  value={prodForm.stock || ''} onChange={(e) => setProdForm({...prodForm, stock: parseInt(e.target.value)})}
+                />
+              </div>
+              <button onClick={guardarProducto} className="bg-green-600 text-white p-3 rounded-xl font-bold">GUARDAR EN BODEGA</button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-gray-100 text-xs uppercase text-gray-600">
+                <tr>
+                  <th className="p-4">Producto</th>
+                  <th className="p-4">Precio</th>
+                  <th className="p-4 text-center">Stock</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {productos.map((p) => (
+                  <tr key={p.id}>
+                    <td className="p-4 font-bold">{p.nombre}</td>
+                    <td className="p-4">S/ {p.p_venta}</td>
+                    <td className={`p-4 text-center font-bold ${p.stock < 5 ? 'text-red-500' : 'text-green-600'}`}>{p.stock}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </main>
+  )
+}
+
+// --- SUB-COMPONENTE: REGISTRO DE VEHÍCULO ---
+function RegistroVehiculo({ onUpdate }: any) {
+  const [form, setForm] = useState({ placa: '', modelo: '', falla: '' })
+
+  const enviar = async () => {
+    if (!form.placa || !form.falla) return alert("Faltan datos")
+    const { error } = await supabase.from('ordenes').insert([form])
+    if (!error) {
+      setForm({ placa: '', modelo: '', falla: '' })
+      onUpdate()
+      alert("Vehículo recibido")
+    }
+  }
+
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-md border-t-4 border-blue-600">
+      <h2 className="text-xl font-bold mb-4">📋 Recepción de Camión</h2>
+      <div className="space-y-3">
+        <input 
+          placeholder="PLACA" className="w-full p-3 border rounded-xl uppercase font-mono text-xl"
+          value={form.placa} onChange={(e) => setForm({...form, placa: e.target.value.toUpperCase()})}
+        />
+        <input 
+          placeholder="MODELO (Ej: Volvo FMX)" className="w-full p-3 border rounded-xl"
+          value={form.modelo} onChange={(e) => setForm({...form, modelo: e.target.value})}
+        />
+        <textarea 
+          placeholder="FALLA REPORTADA" className="w-full p-3 border rounded-xl h-24"
+          value={form.falla} onChange={(e) => setForm({...form, falla: e.target.value})}
+        />
+        <button onClick={enviar} className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold">REGISTRAR ENTRADA</button>
       </div>
     </div>
   )
 }
 
-// --- COMPONENTE: FORMULARIO DE RECEPCIÓN ---
-function FormularioRecepcion({ user, alTerminar }: any) {
-  const [enviando, setEnviando] = useState(false)
-
-  // AQUÍ EMPIEZA LO QUE TIENES QUE REEMPLAZAR (la función guardar)
-  const guardar = async (e: any) => {
-    e.preventDefault()
-    setEnviando(true)
-    const fd = new FormData(e.target)
-
-    const nombreCliente = fd.get('cliente')?.toString() || ''
-    const telefonoCliente = fd.get('tel')?.toString() || ''
-    const placaVehiculo = fd.get('placa')?.toString().toUpperCase() || ''
-    const modeloVehiculo = fd.get('modelo')?.toString() || ''
-    const fallaVehiculo = fd.get('falla')?.toString() || ''
-
-    // 1. Registrar cliente
-    const { data: cliente, error: errC } = await supabase.from('clientes').insert([{ 
-      nombre: nombreCliente, 
-      telefono: telefonoCliente 
-    }]).select().single()
-
-    if (errC || !cliente) {
-      console.error("Error Cliente:", errC)
-      setEnviando(false)
-      return alert("Error al crear cliente: " + errC?.message)
-    }
-
-    // 2. Registrar Vehículo
-    const { data: vehiculo, error: errV } = await supabase.from('vehiculos').insert([{
-      placa: placaVehiculo,
-      modelo: modeloVehiculo,
-      cliente_id: cliente.id
-    }]).select().single()
-
-    if (errV || !vehiculo) {
-      console.error("Error Vehiculo:", errV)
-      setEnviando(false)
-      return alert("Error al crear vehículo: " + errV?.message)
-    }
-
-    // 3. Crear la Orden
-    const { error: errO } = await supabase.from('ordenes').insert([{
-      vehiculo_id: vehiculo.id,
-      creado_por: user.id,
-      falla_cliente: fallaVehiculo,
-      estado: 'COTIZACION'
-    }])
-
-    if (errO) {
-      console.error("Error Orden:", errO)
-      alert("Error al crear la orden: " + errO.message)
-    } else {
-      alert("✅ Orden creada con éxito")
-      alTerminar()
-    }
-    
-    setEnviando(false)
-  }
-  // AQUÍ TERMINA LO QUE REEMPLAZAS
-
-  return (
-    // ... el resto del formulario se queda igual ...
-    <form onSubmit={guardar} className="bg-white p-6 rounded-2xl shadow-md space-y-4 border-t-8 border-blue-600">
-      <h2 className="font-black text-lg border-b pb-2 uppercase text-blue-800">Paso 1: Recepción del Camión</h2>
-      <input name="cliente" placeholder="Nombre del Cliente" className="w-full p-3 border rounded-lg bg-gray-50 font-bold" required />
-      <input name="tel" placeholder="WhatsApp (Ej: +51999...)" className="w-full p-3 border rounded-lg bg-gray-50" required />
-      <div className="flex gap-2">
-        <input name="placa" placeholder="Placa" className="w-1/2 p-3 border rounded-lg bg-gray-50 uppercase font-black" required />
-        <input name="modelo" placeholder="Modelo (Ej: Volvo FMX)" className="w-1/2 p-3 border rounded-lg bg-gray-50" required />
-      </div>
-      <textarea name="falla" placeholder="¿Qué le falla al vehículo?" className="w-full p-3 border rounded-lg bg-yellow-50 h-24" required />
-      <button disabled={enviando} className="w-full bg-blue-700 text-white p-4 rounded-xl font-black uppercase shadow-xl">
-        {enviando ? 'Guardando...' : 'Crear Orden de Servicio'}
-      </button>
-    </form>
-  )
-}
-
-// --- COMPONENTE: LISTA DE ÓRDENES ---
-function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos,onUpdate }: any) {
-  const actualizarEstado = async (id: number, nuevoEstado: string) => {
-    await supabase.from('ordenes').update({ estado: nuevoEstado, mecanico_id: user.id }).eq('id', id)
-    onUpdate()
-  }
-
+// --- SUB-COMPONENTE: LISTA DE ÓRDENES ---
+function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos }: any) {
   return (
     <div className="space-y-4">
-      <h2 className="font-black text-gray-400 uppercase text-xs tracking-widest">Órdenes en proceso</h2>
+      <h2 className="text-xl font-bold text-gray-700">🛠️ Órdenes en Curso</h2>
       {ordenes.map((o: any) => (
-        <div key={o.id} className="bg-white p-5 rounded-2xl shadow-md border-l-8 border-orange-500">
+        <div key={o.id} className="bg-white p-5 rounded-2xl shadow-md border-l-8 border-blue-500">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <span className="text-[10px] bg-gray-800 text-white px-2 py-0.5 rounded-full font-bold">ORDEN #{o.id}</span>
-              <h3 className="font-black text-lg text-blue-900 uppercase mt-1">{o.vehiculos?.placa}</h3>
+              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">ORDEN #{o.id.toString().slice(-4)}</span>
+              <h3 className="text-2xl font-black text-gray-800">{o.placa}</h3>
+              <p className="text-sm text-gray-500">{o.modelo}</p>
             </div>
-            <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase ${o.estado === 'LISTO' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+            <span className={`text-xs font-bold px-3 py-1 rounded-full ${o.estado === 'EN TRABAJO' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100'}`}>
               {o.estado}
             </span>
           </div>
           
-         <p className="text-sm text-gray-600 mb-3 font-medium">
-  <strong>Falla:</strong> {o.falla_cliente || o.falla || "Sin descripción de falla"}
-</p>
-          
-          {/* BOTONES DE ACCIÓN */}
-<div className="flex gap-2 border-t pt-3">
-  {o.estado === 'COTIZACION' && (
-    <button 
-      onClick={() => cambiarEstado(o.id, 'EN TRABAJO')}
-      className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm w-full font-bold"
-    >
-      🛠️ TOMAR PARA REPARAR
-    </button>
-  )}
+          <div className="bg-gray-50 p-3 rounded-xl mb-4">
+            <p className="text-sm font-bold text-gray-400 uppercase text-xs">Falla:</p>
+            <p className="text-gray-700 font-medium">{o.falla}</p>
+          </div>
 
-  {o.estado === 'EN TRABAJO' && (
-    <div className="w-full space-y-3">
-      <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-        <p className="text-xs font-bold text-yellow-700 mb-2">📦 AÑADIR REPUESTO DE BODEGA:</p>
-        <select 
-          onChange={(e) => agregarRepuesto(o.id, e.target.value)}
-          className="w-full p-2 border rounded bg-white text-sm"
-          defaultValue=""
-        >
-          <option value="" disabled>Seleccionar producto...</option>
-          {productos.map((p: any) => (
-            <option key={p.id} value={p.id}>
-              {p.nombre} - S/ {p.p_venta} (Stock: {p.stock})
-            </option>
-          ))}
-        </select>
-      </div>
-      
-      <button 
-        onClick={() => cambiarEstado(o.id, 'TERMINADO')}
-        className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm w-full font-bold"
-      >
-        ✅ FINALIZAR TRABAJO
-      </button>
-    </div>
-  )}
-</div>
+          <div className="border-t pt-4">
+            {o.estado === 'COTIZACION' && (
+              <button 
+                onClick={() => cambiarEstado(o.id, 'EN TRABAJO')}
+                className="w-full bg-blue-600 text-white p-3 rounded-xl font-bold"
+              >
+                🛠️ COMENZAR TRABAJO
+              </button>
+            )}
+
+            {o.estado === 'EN TRABAJO' && (
+              <div className="space-y-3">
+                <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                  <p className="text-xs font-bold text-blue-700 mb-2">📦 AÑADIR REPUESTO:</p>
+                  <select 
+                    className="w-full p-2 border rounded-lg bg-white"
+                    onChange={(e) => agregarRepuesto(o.id, e.target.value)}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>Seleccionar de bodega...</option>
+                    {productos.map((p: any) => (
+                      <option key={p.id} value={p.id}>{p.nombre} (Stock: {p.stock})</option>
+                    ))}
+                  </select>
+                </div>
+                <button 
+                  onClick={() => cambiarEstado(o.id, 'TERMINADO')}
+                  className="w-full bg-green-600 text-white p-3 rounded-xl font-bold"
+                >
+                  ✅ FINALIZAR Y COBRAR (S/ {o.total_orden || 0})
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       ))}
     </div>
