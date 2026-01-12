@@ -162,7 +162,9 @@ function ListaOrdenes({ ordenes, user, onUpdate }: any) {
             </span>
           </div>
           
-          <p className="text-sm text-gray-600 mb-3 font-medium"><strong>Falla:</strong> {o.falla_reportada}</p>
+         <p className="text-sm text-gray-600 mb-3 font-medium">
+  <strong>Falla:</strong> {o.falla_reportada || o.falla || "Sin descripción de falla"}
+</p>
           
           <div className="flex gap-2 border-t pt-4 mt-2">
             {o.estado === 'COTIZACION' && user.rol !== 'RECEPCION' && (
