@@ -8,7 +8,39 @@ export default function Home() {
   const [seccion, setSeccion] = useState('menu')
   const [ordenes, setOrdenes] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+const [productos, setProductos] = useState<any[]>([]); // Agrega esto donde están los otros useState
+// Función para cambiar el estado (de COTIZACION a EN TRABAJO, etc.)
+const cambiarEstado = async (id: number, nuevoEstado: string) => {
+  const { error } = await supabase
+    .from('ordenes')
+    .update({ estado: nuevoEstado, mecanico_id: user.id })
+    .eq('id', id)
 
+  if (error) alert("Error al cambiar estado")
+  cargarDatos() // Esto refresca la lista automáticamente
+}
+
+// Función para cargar los productos de la bodega
+const cargarProductos = async () => {
+  const { data } = await supabase.from('productos').select('*')
+  if (data) setProductos(data)
+}
+const agregarRepuesto = async (ordenId: any, productoId: any) => {
+  const prod = productos.find((p: any) => p.id === parseInt(productoId))
+  if (!prod || prod.stock <= 0) return alert("Sin stock")
+
+  await supabase.from('detalles_orden').insert([{
+    orden_id: ordenId,
+    producto_id: productoId,
+    cantidad: 1,
+    precio_unitario: prod.p_venta
+  }])
+
+  await supabase.from('productos').update({ stock: prod.stock - 1 }).eq('id', productoId)
+  
+  alert("Repuesto agregado")
+  cargarDatos()
+}
   // --- SISTEMA DE LOGIN ---
   const handleLogin = async () => {
     const { data } = await supabase.from('personal').select('*').eq('pin', pin).eq('activo', true).single()
@@ -55,7 +87,7 @@ export default function Home() {
 
         {/* CONTENIDO DINÁMICO */}
         {seccion === 'nueva' && <FormularioRecepcion user={user} alTerminar={() => {setSeccion('lista'); cargarDatos()}} />}
-        {seccion === 'lista' && <ListaOrdenes ordenes={ordenes} user={user} onUpdate={cargarDatos} />}
+        {seccion === 'lista' && <ListaOrdenes ordenes={ordenes} user={user}  cambiarEstado={cambiarEstado}  agregarRepuesto={agregarRepuesto}  productos={productos} onUpdate={cargarDatos} />}
       </div>
     </div>
   )
@@ -141,7 +173,7 @@ function FormularioRecepcion({ user, alTerminar }: any) {
 }
 
 // --- COMPONENTE: LISTA DE ÓRDENES ---
-function ListaOrdenes({ ordenes, user, onUpdate }: any) {
+function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos,onUpdate }: any) {
   const actualizarEstado = async (id: number, nuevoEstado: string) => {
     await supabase.from('ordenes').update({ estado: nuevoEstado, mecanico_id: user.id }).eq('id', id)
     onUpdate()
@@ -166,17 +198,44 @@ function ListaOrdenes({ ordenes, user, onUpdate }: any) {
   <strong>Falla:</strong> {o.falla_cliente || o.falla || "Sin descripción de falla"}
 </p>
           
-          <div className="flex gap-2 border-t pt-4 mt-2">
-            {o.estado === 'COTIZACION' && user.rol !== 'RECEPCION' && (
-              <button onClick={() => actualizarEstado(o.id, 'EN_TRABAJO')} className="flex-1 bg-blue-100 text-blue-700 py-2 rounded-lg font-bold text-xs uppercase">🛠️ Tomar para Reparar</button>
-            )}
-            {o.estado === 'EN_TRABAJO' && user.rol !== 'RECEPCION' && (
-              <button onClick={() => actualizarEstado(o.id, 'LISTO')} className="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-xs uppercase">✅ Terminar Trabajo</button>
-            )}
-            {o.estado === 'LISTO' && (
-              <button className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg font-bold text-xs uppercase">📱 Avisar Cliente</button>
-            )}
-          </div>
+          {/* BOTONES DE ACCIÓN */}
+<div className="flex gap-2 border-t pt-3">
+  {o.estado === 'COTIZACION' && (
+    <button 
+      onClick={() => cambiarEstado(o.id, 'EN TRABAJO')}
+      className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm w-full font-bold"
+    >
+      🛠️ TOMAR PARA REPARAR
+    </button>
+  )}
+
+  {o.estado === 'EN TRABAJO' && (
+    <div className="w-full space-y-3">
+      <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+        <p className="text-xs font-bold text-yellow-700 mb-2">📦 AÑADIR REPUESTO DE BODEGA:</p>
+        <select 
+          onChange={(e) => agregarRepuesto(o.id, e.target.value)}
+          className="w-full p-2 border rounded bg-white text-sm"
+          defaultValue=""
+        >
+          <option value="" disabled>Seleccionar producto...</option>
+          {productos.map((p: any) => (
+            <option key={p.id} value={p.id}>
+              {p.nombre} - S/ {p.p_venta} (Stock: {p.stock})
+            </option>
+          ))}
+        </select>
+      </div>
+      
+      <button 
+        onClick={() => cambiarEstado(o.id, 'TERMINADO')}
+        className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm w-full font-bold"
+      >
+        ✅ FINALIZAR TRABAJO
+      </button>
+    </div>
+  )}
+</div>
         </div>
       ))}
     </div>
