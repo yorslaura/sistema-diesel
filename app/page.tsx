@@ -18,21 +18,25 @@ export default function Home() {
   const [prodForm, setProdForm] = useState({ nombre: '', p_venta: 0, stock: 0 })
 
   const cargarDatos = async () => {
-    setLoading(true)
-    // Traemos órdenes y "jalamos" los datos del cliente conectado por FK
-    const { data: ords } = await supabase
-      .from('ordenes')
-      .select('*, clientes(nombre, telefono, empresa)') 
-      .order('created_at', { ascending: false })
+  setLoading(true)
+  // Intentamos la carga
+  const { data: ords, error: errorOrds } = await supabase
+    .from('ordenes')
+    .select('*, clientes(nombre, telefono, empresa)') 
 
-    const { data: prods } = await supabase.from('productos').select('*').order('nombre')
-    const { data: clis } = await supabase.from('clientes').select('*').order('nombre')
-
-    if (ords) setOrdenes(ords)
-    if (prods) setProductos(prods)
-    if (clis) setClientes(clis)
-    setLoading(false)
+  if (errorOrds) {
+    console.error("Error cargando órdenes:", errorOrds);
+    alert("Error en órdenes: " + errorOrds.message); // Esto nos dirá qué nombre está mal
   }
+
+  const { data: prods } = await supabase.from('productos').select('*').order('nombre')
+  const { data: clis } = await supabase.from('clientes').select('*').order('nombre')
+
+  if (ords) setOrdenes(ords)
+  if (clis) setClientes(clis)
+  if (prods) setProductos(prods)
+  setLoading(false)
+}
 
   useEffect(() => {
     if (user) cargarDatos()
