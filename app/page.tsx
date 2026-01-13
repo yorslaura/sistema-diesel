@@ -1,157 +1,98 @@
-import React, { useState } from 'react';
+'use client'
+import { useState, useEffect } from 'react'
 
-const App = () => {
-  // Estados para controlar la navegación y los clics del huevo
-  const [ruta, setRuta] = useState('menu-principal');
-  const [clicks, setClicks] = useState(0);
+export default function Home() {
+  // 1. EL CEREBRO (ESTADO)
+  // 'clics' empieza en 0 y 'setClis' es la función para aumentar el número.
+  const [clics, setClics] = useState(0)
+  // Definimos la meta
+  const META_CLICS = 40
+  // Calculamos si está roto. Esto es 'true' cuando llegamos a 40.
+  const estaRoto = clics >= META_CLICS
 
-  // Función para manejar el clic en el huevo
-  const manejarClickHuevo = () => {
-    if (clicks < 6) {
-      setClicks(clicks + 1);
+  // Estado extra para una pequeña animación al hacer clic
+  const [animarGolpe, setAnimarGolpe] = useState(false)
+
+  // 2. LA ACCIÓN (FUNCIÓN AL HACER CLIC)
+  const golpearHuevo = () => {
+    if (!estaRoto) {
+      setClics(clics + 1)
+      // Activamos una pequeña animación de "temblor"
+      setAnimarGolpe(true)
+      setTimeout(() => setAnimarGolpe(false), 150) // Desactiva el temblor rápido
     }
-  };
+  }
+
+  // Calculamos cuánto falta para que se rompa (para mostrar un porcentaje visual)
+  const progreso = (clics / META_CLICS) * 100
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif', backgroundColor: '#fff5f7', minHeight: '100vh' }}>
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-pink-50 p-4 overflow-hidden">
       
-      {/* --- NAVEGACIÓN (Basada en tu imagen) --- */}
-      <nav style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-        <button 
-          onClick={() => setRuta('menu-principal')}
-          style={{ padding: '8px 15px', cursor: 'pointer' }}
-        >
-          Inicio
-        </button>
-        <button 
-          onClick={() => setRuta('pagina-taller')}
-          style={{ padding: '8px 15px', cursor: 'pointer' }}
-        >
-          Ir a taller
-        </button>
-        <button 
-          onClick={() => setRuta('pagina-bodega')}
-          style={{ padding: '8px 15px', cursor: 'pointer' }}
-        >
-          Ir a bodega
-        </button>
-        <button 
-          onClick={() => { setRuta('sorpresa'); setClicks(0); }}
-          style={{ 
-            padding: '8px 15px', 
-            cursor: 'pointer', 
-            backgroundColor: '#ff4d6d', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '5px',
-            fontWeight: 'bold'
-          }}
-        >
-          🎁 Para Judith
-        </button>
-      </nav>
+      {/* --- ESCENA 1: EL HUEVO (Se muestra si NO está roto) --- */}
+      {!estaRoto && (
+        <div className="text-center relative">
+          {/* Barra de progreso superior */}
+          <div className="w-64 h-4 bg-gray-200 rounded-full mb-8 overflow-hidden shadow-inner border border-gray-300 mx-auto">
+            <div 
+              className="h-full bg-gradient-to-r from-pink-400 to-yellow-400 transition-all duration-300 ease-out"
+              style={{ width: `${progreso}%` }}
+            ></div>
+          </div>
 
-      <hr />
-
-      {/* --- RUTA: MENU PRINCIPAL --- */}
-      {ruta === 'menu-principal' && (
-        <section>
-          <h1>Bienvenido al Sistema</h1>
-          <p>Elije una opcion arriba para navegar.</p>
-        </section>
-      )}
-
-      {/* --- RUTA: TALLER --- */}
-      {ruta === 'pagina-taller' && (
-        <section>
-          <h1>Sector: Taller mecanico</h1>
-        </section>
-      )}
-
-      {/* --- RUTA: BODEGA --- */}
-      {ruta === 'pagina-bodega' && (
-        <section>
-          <h1>Sector: Bodega</h1>
-        </section>
-      )}
-
-      {/* --- RUTA: SORPRESA (EL HUEVO CUTE) --- */}
-      {ruta === 'sorpresa' && (
-        <section style={{ textAlign: 'center', marginTop: '40px' }}>
-          {clicks < 6 ? (
-            <div onClick={manejarClickHuevo} style={{ cursor: 'pointer', display: 'inline-block' }}>
-              <h2 style={{ color: '#d63384', marginBottom: '30px' }}>¡Judith, rompe el huevito!</h2>
-              
-              {/* Contenedor del Huevo */}
-              <div style={{
-                width: '140px',
-                height: '185px',
-                backgroundColor: '#fffdf0',
-                borderRadius: '50% 50% 50% 50% / 65% 65% 35% 35%',
-                margin: '0 auto',
-                position: 'relative',
-                boxShadow: 'inset -10px -10px 0 rgba(0,0,0,0.05), 0 10px 20px rgba(0,0,0,0.1)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                transition: 'transform 0.1s',
-                transform: clicks > 0 ? `rotate(${clicks % 2 === 0 ? '5deg' : '-5deg'}) scale(1.05)` : 'scale(1)'
-              }}>
-                {/* Carita Kawaii */}
-                <div style={{ display: 'flex', gap: '25px', marginBottom: '10px' }}>
-                  <div style={{ width: '12px', height: '12px', backgroundColor: '#333', borderRadius: '50%' }}></div>
-                  <div style={{ width: '12px', height: '12px', backgroundColor: '#333', borderRadius: '50%' }}></div>
-                </div>
-                <div style={{ display: 'flex', gap: '45px', position: 'absolute', top: '65%' }}>
-                  <div style={{ width: '18px', height: '10px', backgroundColor: '#ffb6c1', borderRadius: '50%', opacity: 0.6 }}></div>
-                  <div style={{ width: '18px', height: '10px', backgroundColor: '#ffb6c1', borderRadius: '50%', opacity: 0.6 }}></div>
-                </div>
-                <div style={{ fontSize: '20px', color: '#333', fontWeight: 'bold' }}>v</div>
-              </div>
-              
-              <p style={{ color: '#b1949a', marginTop: '20px' }}>Dale clics para que nazca: <b>{clicks} / 6</b></p>
+          {/* EL HUEVO CUTE (Dibujado con CSS) */}
+          <div className="relative group cursor-pointer select-none no-tap-highlight" onClick={golpearHuevo}>
+            {/* Esta es la forma del huevo usando bordes redondeados de Tailwind */}
+            <div className={`w-56 h-72 bg-gradient-to-b from-[#FFF9E3] to-[#FFEDCC] shadow-[0_10px_30px_rgba(0,0,0,0.1)] 
+                 rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] border-4 border-white relative transition-transform duration-150 ease-in-out
+                 ${animarGolpe ? 'animate-wiggle scale-95' : 'hover:scale-105 animate-float'}
+            `}>
+               {/* Un pequeño brillo para hacerlo cute */}
+               <div className="absolute top-6 left-8 w-10 h-16 bg-white opacity-60 rounded-full rotate-[-20deg]"></div>
+               
+               {/* Grietas que aparecen según el progreso */}
+               <div className="absolute inset-0 overflow-hidden rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] opacity-60 mix-blend-multiply pointer-events-none">
+                {clics > 10 && <div className="absolute top-1/4 left-1/2 w-0.5 h-12 bg-gray-400 -rotate-12"></div>}
+                {clics > 20 && <div className="absolute top-1/2 right-1/3 w-0.5 h-16 bg-gray-400 rotate-45"></div>}
+                {clics > 30 && <div className="absolute bottom-1/3 left-1/3 w-0.5 h-20 bg-gray-400 -rotate-6"></div>}
+               </div>
             </div>
-          ) : (
-            /* MENSAJE FINAL */
-            <div style={{ 
-              animation: 'fadeIn 1s forwards',
-              backgroundColor: 'white',
-              padding: '30px',
-              borderRadius: '20px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-              display: 'inline-block'
-            }}>
-              <h1 style={{ color: '#d63384', margin: '0' }}>❤️ Judith ❤️</h1>
-              <p style={{ fontSize: '1.4rem', color: '#444', lineHeight: '1.5' }}>
-                <strong>Grosera y malcriada</strong>,<br />
-                te amo mi señora esposa.<br />
-                <span style={{ color: '#ff4d6d', fontWeight: 'bold' }}>
-                  La muchacha más linda de la tierra.
-                </span>
-              </p>
-              <div style={{ fontSize: '80px', marginTop: '10px' }}>🐣💖</div>
-              <button 
-                onClick={() => setClicks(0)}
-                style={{ marginTop: '20px', border: 'none', background: 'none', color: '#aaa', cursor: 'pointer', textDecoration: 'underline' }}
-              >
-                Volver a romper
-              </button>
-            </div>
-          )}
-        </section>
+            
+            {/* Texto indicador debajo */}
+            <p className="mt-6 text-gray-500 font-bold text-sm tracking-widest uppercase animate-pulse">
+              {clics === 0 ? "¡Toca el huevo para empezar!" : `Faltan ${META_CLICS - clics} toques...`}
+            </p>
+          </div>
+        </div>
       )}
 
-      {/* Animación CSS para el mensaje */}
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      {/* --- ESCENA 2: LA SORPRESA (Se muestra si SÍ está roto) --- */}
+      {estaRoto && (
+        <div className="text-center max-w-md bg-white/80 backdrop-blur-sm p-10 rounded-3xl shadow-2xl animate-popIn border border-pink-100">
+          {/* Icono de corazón animado */}
+          <div className="text-6xl mb-4 animate-bounce">💖</div>
+          
+          {/* El Mensaje Poético */}
+          <h1 className="text-3xl font-serif text-gray-800 mb-6 leading-relaxed">
+            Te amo mucho,<br />
+            <span className="text-pink-600 italic">señorita esposa.</span>
+          </h1>
+          
+          <div className="w-16 h-1 bg-pink-300 mx-auto mb-6 rounded-full"></div>
 
-    </div>
-  );
-};
+          <p className="text-gray-600 text-lg font-serif italic mb-10 leading-loose">
+            "En cada latido resuena la certeza de que mi alma encontró su hogar en la tuya. Gracias por ser mi compañera de vida."
+          </p>
 
-export default App;
+          {/* El Footer Específico */}
+          <div className="bg-pink-50 py-3 px-6 rounded-xl inline-block border border-pink-200 transform -rotate-2">
+             <p className="text-sm font-bold text-pink-800 tracking-wide">
+               para (Judith-grosera y malcriada), así mismo.
+             </p>
+          </div>
+        </div>
+      )}
+
+    </main>
+  )
+}
