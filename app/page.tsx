@@ -11,12 +11,41 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form, setForm] = useState({nombre: '', identificacion: '', placa: '', modelo: '', falla: ''})
   // funciones
+  // --- FUNCIÓN PARA AUTOCOMPLETAR CLIENTE ---
+  const buscarClienteExistente = (nombreEscrito: string) => {
+    // Actualizamos el nombre en el formulario mientras escribes
+    setForm(prev => ({ ...prev, nombre: nombreEscrito }))
+
+    // Buscamos si ese nombre ya existe en lo que hemos guardado
+    const coincidencia = ordenes.find(
+      (o) => o.nombre.trim().toLowerCase() === nombreEscrito.trim().toLowerCase()
+    )
+
+    // Si lo encuentra y el usuario no ha escrito nada en DNI/Modelo, lo llenamos
+    if (coincidencia) {
+      setForm(prev => ({
+        ...prev,
+        identificacion: coincidencia.identificacion,
+        modelo: coincidencia.modelo
+      }))
+    }
+  }
+
+  // --- FUNCIÓN PARA GUARDAR LA ORDEN ---
   const guardarOrden = () => {
-    if (!form.placa || !form.nombre) return
-    alert("Llena los datos basicos")
-    setOrdenes([...ordenes, {...form, id:Date.now()}])
-    setForm({ nombre: '', identificacion: '', placa: '',modelo: '', falla: ''})
+    // Solo Placa, Nombre y Falla son obligatorios
+    if (!form.placa || !form.nombre || !form.falla) {
+      alert("⚠️ Faltan datos obligatorios: Placa, Nombre y Falla.")
+      return
+    }
+
+    // Guardamos la orden (DNI y Modelo pueden ir vacíos)
+    setOrdenes([...ordenes, { ...form, id: Date.now() }])
+    
+    // Limpiamos todo y cerramos la ventana (Sin moverte al historial)
+    setForm({ nombre: '', identificacion: '', placa: '', modelo: '', falla: '' })
     setIsModalOpen(false)
+    alert("✅ Trabajo registrado correctamente")
   }
 
   const handleLogin = () => {
@@ -176,8 +205,13 @@ export default function Home() {
             
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <input placeholder="Nombre Cliente" className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none" 
-                  value={form.nombre} onChange={(e) => setForm({...form, nombre: e.target.value})} />
+                <input 
+  placeholder="Nombre Cliente" 
+  className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none" 
+  value={form.nombre} 
+  // ESTA ES LA LÍNEA QUE CAMBIA:
+  onChange={(e) => buscarClienteExistente(e.target.value)} 
+/>
                 <input placeholder="DNI / RUC" className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none"
                   value={form.identificacion} onChange={(e) => setForm({...form, identificacion: e.target.value})} />
               </div>
