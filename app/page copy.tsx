@@ -184,45 +184,55 @@ export default function Home() {
 
 // --- SUB-COMPONENTE: REGISTRO DE VEHÍCULO ---
 function RegistroVehiculo({ onUpdate }: any) {
-  // Añadimos nombre y telefono al estado
-  const [form, setForm] = useState({ placa: '', modelo: '', falla: '', nombre_cliente: '', telefono: '' })
+  const [form, setForm] = useState({ 
+    placa: '', 
+    modelo: '', 
+    falla: '', 
+    nombre_cliente: '', 
+    telefono: '' 
+  })
 
   const enviar = async () => {
-    if (!form.placa || !form.falla || !form.nombre_cliente) return alert("Faltan datos importantes")
+    // Validamos que al menos los datos básicos estén llenos
+    if (!form.placa || !form.falla || !form.nombre_cliente) return alert("Faltan datos (Placa, Cliente y Falla son obligatorios)")
+    
     const { error } = await supabase.from('ordenes').insert([form])
     if (!error) {
       setForm({ placa: '', modelo: '', falla: '', nombre_cliente: '', telefono: '' })
       onUpdate()
-      alert("Vehículo registrado con éxito")
+      alert("✅ Vehículo y Cliente registrados")
+    } else {
+      console.error(error)
+      alert("Error al guardar. Revisa que las columnas existan en Supabase.")
     }
   }
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-      <h2 className="text-lg font-bold mb-3 text-gray-700 text-center uppercase tracking-wider">📋 Entrada de Unidad</h2>
-      <div className="grid grid-cols-2 gap-3"> {/* Usamos rejilla para que no sea tan largo hacia abajo */}
+    <div className="bg-white p-4 rounded-2xl shadow-md border-t-4 border-blue-600">
+      <h2 className="text-lg font-bold mb-4 text-gray-700">📋 Recepción de Camión</h2>
+      <div className="grid grid-cols-2 gap-3">
         <input 
-          placeholder="PLACA" className="p-2 border rounded-lg uppercase font-mono text-lg bg-gray-50"
+          placeholder="PLACA" className="p-3 border rounded-xl uppercase font-mono text-lg bg-gray-50"
           value={form.placa} onChange={(e) => setForm({...form, placa: e.target.value.toUpperCase()})}
         />
         <input 
-          placeholder="MODELO" className="p-2 border rounded-lg text-sm"
+          placeholder="MODELO" className="p-3 border rounded-xl"
           value={form.modelo} onChange={(e) => setForm({...form, modelo: e.target.value})}
         />
         <input 
-          placeholder="NOMBRE CLIENTE" className="p-2 border rounded-lg text-sm col-span-2"
+          placeholder="NOMBRE DEL CLIENTE" className="p-3 border rounded-xl col-span-2"
           value={form.nombre_cliente} onChange={(e) => setForm({...form, nombre_cliente: e.target.value})}
         />
         <input 
-          placeholder="TELÉFONO" className="p-2 border rounded-lg text-sm col-span-2"
+          placeholder="TELÉFONO" className="p-3 border rounded-xl col-span-2"
           value={form.telefono} onChange={(e) => setForm({...form, telefono: e.target.value})}
         />
         <textarea 
-          placeholder="FALLA REPORTADA..." className="p-2 border rounded-lg h-20 text-sm col-span-2"
+          placeholder="FALLA REPORTADA" className="w-full p-3 border rounded-xl h-20 col-span-2"
           value={form.falla} onChange={(e) => setForm({...form, falla: e.target.value})}
         />
-        <button onClick={enviar} className="col-span-2 bg-blue-700 text-white p-3 rounded-xl font-bold hover:bg-blue-800 transition shadow-lg">
-          REGISTRAR INGRESO
+        <button onClick={enviar} className="col-span-2 bg-blue-600 text-white p-4 rounded-xl font-bold shadow-lg active:scale-95 transition">
+          REGISTRAR ENTRADA
         </button>
       </div>
     </div>
@@ -240,15 +250,17 @@ function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos
             <div>
               <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">ORDEN #{o.id.toString().slice(-4)}</span>
               <h3 className="text-2xl font-black text-gray-800">{o.placa}</h3>
-              <p className="text-sm text-gray-500">{o.modelo}</p>
+              {/* AQUÍ SE MUESTRA EL CLIENTE */}
+              <p className="text-sm font-bold text-blue-800 uppercase">{o.nombre_cliente || 'Sin nombre'}</p>
+              <p className="text-xs text-gray-500">{o.modelo} • 📞 {o.telefono || 'Sin tel.'}</p>
             </div>
             <span className={`text-xs font-bold px-3 py-1 rounded-full ${o.estado === 'EN TRABAJO' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100'}`}>
               {o.estado}
             </span>
           </div>
           
-          <div className="bg-gray-50 p-3 rounded-xl mb-4">
-            <p className="text-sm font-bold text-gray-400 uppercase text-xs">Falla:</p>
+          <div className="bg-gray-50 p-3 rounded-xl mb-4 border border-gray-100">
+            <p className="text-xs font-bold text-gray-400 uppercase">Falla Reportada:</p>
             <p className="text-gray-700 font-medium">{o.falla}</p>
           </div>
 
@@ -264,6 +276,7 @@ function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos
 
             {o.estado === 'EN TRABAJO' && (
               <div className="space-y-3">
+                {/* Selector de repuestos y botón de finalizar (Igual que antes) */}
                 <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
                   <p className="text-xs font-bold text-blue-700 mb-2">📦 AÑADIR REPUESTO:</p>
                   <select 
@@ -273,7 +286,7 @@ function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos
                   >
                     <option value="" disabled>Seleccionar de bodega...</option>
                     {productos.map((p: any) => (
-                      <option key={p.id} value={p.id}>{p.nombre} (Stock: {p.stock})</option>
+                      <option key={p.id} value={p.id}>{p.nombre} (S/ {p.p_venta} - Stock: {p.stock})</option>
                     ))}
                   </select>
                 </div>
@@ -281,7 +294,7 @@ function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos
                   onClick={() => cambiarEstado(o.id, 'TERMINADO')}
                   className="w-full bg-green-600 text-white p-3 rounded-xl font-bold"
                 >
-                  ✅ FINALIZAR Y COBRAR (S/ {o.total_orden || 0})
+                  ✅ FINALIZAR (Total: S/ {o.total_orden || 0})
                 </button>
               </div>
             )}
