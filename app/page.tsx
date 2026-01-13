@@ -9,7 +9,7 @@ export default function Home() {
   const [verLista, setVerLista] = useState(false)
   const [ordenes, setOrdenes] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [form, setForm] = useState({nombre: '', identificacion: '', placa: '', modelo: '', falla: ''})
+  const [form, setForm] = useState({nombre: '', identificacion: '',telefono: '', placa: '', modelo: '', falla: ''})
   // funciones
   // --- FUNCIÓN PARA AUTOCOMPLETAR CLIENTE ---
   const buscarClienteExistente = (nombreEscrito: string) => {
@@ -26,7 +26,10 @@ export default function Home() {
       setForm(prev => ({
         ...prev,
         identificacion: coincidencia.identificacion,
-        modelo: coincidencia.modelo
+        modelo: coincidencia.modelo,
+        telefono: coincidencia.telefono,
+        nombre: coincidencia.nombre,
+        falla: coincidencia.falla
       }))
     }
   }
@@ -34,8 +37,8 @@ export default function Home() {
   // --- FUNCIÓN PARA GUARDAR LA ORDEN ---
   const guardarOrden = () => {
     // Solo Placa, Nombre y Falla son obligatorios
-    if (!form.placa || !form.nombre || !form.falla) {
-      alert("⚠️ Faltan datos obligatorios: Placa, Nombre y Falla.")
+    if (!form.placa || !form.nombre || !form.falla || !form.telefono) {
+      alert("⚠️ Faltan uno de los datos obligatorios: Placa, Nombre, Falla y Telefono.")
       return
     }
 
@@ -43,7 +46,7 @@ export default function Home() {
     setOrdenes([...ordenes, { ...form, id: Date.now() }])
     
     // Limpiamos todo y cerramos la ventana (Sin moverte al historial)
-    setForm({ nombre: '', identificacion: '', placa: '', modelo: '', falla: '' })
+    setForm({ nombre: '', identificacion: '', placa: '', modelo: '', falla: '', telefono: ''})
     setIsModalOpen(false)
     alert("✅ Trabajo registrado correctamente")
   }
@@ -171,7 +174,7 @@ export default function Home() {
                       <div>
                         <p className="text-orange-500 font-mono text-[10px] mb-1">PLACA: {o.placa}</p>
                         <h3 className="text-lg font-bold uppercase">{o.nombre}</h3>
-                        <p className="text-gray-500 text-xs font-bold">{o.modelo} • {o.identificacion}</p>
+                        <p className="text-gray-500 text-xs font-bold">{o.modelo} • {o.identificacion}• {o.telefono}</p>
                       </div>
                       <span className="bg-orange-600 text-[10px] px-2 py-1 rounded font-black italic">EN ESPERA</span>
                     </div>
@@ -196,42 +199,52 @@ export default function Home() {
       </button>
 
       {/* 4. VENTANITA DE REGISTRO (MODAL) */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-[#111] border border-gray-800 w-full max-w-lg rounded-[2rem] p-8 shadow-2xl">
-            <h2 className="text-2xl font-black mb-6 text-white uppercase italic tracking-tighter">
-              Nueva <span className="text-orange-500">Orden</span>
-            </h2>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <input 
-  placeholder="Nombre Cliente" 
-  className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none" 
-  value={form.nombre} 
-  // ESTA ES LA LÍNEA QUE CAMBIA:
-  onChange={(e) => buscarClienteExistente(e.target.value)} 
-/>
-                <input placeholder="DNI / RUC" className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none"
-                  value={form.identificacion} onChange={(e) => setForm({...form, identificacion: e.target.value})} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input placeholder="Placa" className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm uppercase focus:border-orange-500 outline-none"
-                  value={form.placa} onChange={(e) => setForm({...form, placa: e.target.value.toUpperCase()})} />
-                <input placeholder="Modelo" className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none"
-                  value={form.modelo} onChange={(e) => setForm({...form, modelo: e.target.value})} />
-              </div>
-              <textarea placeholder="Falla reportada..." className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm w-full h-24 focus:border-orange-500 outline-none"
-                value={form.falla} onChange={(e) => setForm({...form, falla: e.target.value})} />
-              
-              <div className="flex gap-3 pt-4">
-                <button onClick={() => setIsModalOpen(false)} className="flex-1 bg-gray-900 p-4 rounded-2xl font-bold text-gray-500">CANCELAR</button>
-                <button onClick={guardarOrden} className="flex-1 bg-orange-600 p-4 rounded-2xl font-bold text-white shadow-lg">GUARDAR TRABAJO</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* REEMPLAZA LOS INPUTS DEL MODAL POR ESTOS */}
+<div className="space-y-4">
+  <input 
+    placeholder="Nombre Cliente" 
+    className="w-full bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none" 
+    value={form.nombre} 
+    onChange={(e) => buscarClienteExistente(e.target.value)} 
+  />
+  
+  <div className="grid grid-cols-2 gap-3">
+    <input 
+      placeholder="Teléfono" 
+      className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none" 
+      value={form.telefono} 
+      onChange={(e) => setForm({...form, telefono: e.target.value})} 
+    />
+    <input 
+      placeholder="DNI / RUC" 
+      className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none"
+      value={form.identificacion} 
+      onChange={(e) => setForm({...form, identificacion: e.target.value})} 
+    />
+  </div>
+
+  <div className="grid grid-cols-2 gap-3">
+    <input 
+      placeholder="Placa" 
+      className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm uppercase focus:border-orange-500 outline-none"
+      value={form.placa} 
+      onChange={(e) => setForm({...form, placa: e.target.value.toUpperCase()})} 
+    />
+    <input 
+      placeholder="Modelo" 
+      className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm focus:border-orange-500 outline-none"
+      value={form.modelo} 
+      onChange={(e) => setForm({...form, modelo: e.target.value})} 
+    />
+  </div>
+  
+  <textarea 
+    placeholder="Falla reportada..." 
+    className="bg-white/5 border border-gray-800 p-3 rounded-xl text-sm w-full h-24 focus:border-orange-500 outline-none"
+    value={form.falla} 
+    onChange={(e) => setForm({...form, falla: e.target.value})} 
+  />
+</div>
 
     </main>
   )
