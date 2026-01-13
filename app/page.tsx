@@ -26,10 +26,8 @@ export default function Home() {
       setForm(prev => ({
         ...prev,
         identificacion: coincidencia.identificacion,
-        modelo: coincidencia.modelo,
         telefono: coincidencia.telefono,
         nombre: coincidencia.nombre,
-        falla: coincidencia.falla
       }))
     }
   }
@@ -37,8 +35,8 @@ export default function Home() {
   // --- FUNCIÓN PARA GUARDAR LA ORDEN ---
   const guardarOrden = () => {
     // Solo Placa, Nombre y Falla son obligatorios
-    if (!form.placa || !form.nombre || !form.falla || !form.telefono) {
-      alert("⚠️ Faltan uno de los datos obligatorios: Placa, Nombre, Falla y Telefono.")
+    if (!form.placa || !form.nombre || !form.falla ) {
+      alert("⚠️ Faltan uno de los datos obligatorios: Placa, Nombre y Falla.")
       return
     }
 
