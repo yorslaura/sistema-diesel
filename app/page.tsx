@@ -39,7 +39,7 @@ export default function Home() {
   }, [user])
 
   const handleLogin = async () => {
-    const { data } = await supabase.from('usuarios').select('*').eq('pin', pin).single()
+    const { data } = await supabase.from('personal').select('*').eq('pin', pin).single()
     if (data) setUser(data)
     else alert("PIN Incorrecto")
   }
