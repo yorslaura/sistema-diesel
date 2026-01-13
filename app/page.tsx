@@ -170,7 +170,7 @@ function RegistroVehiculo({ clientes, onUpdate }: any) {
 
 function ListaOrdenes({ ordenes, user, cambiarEstado, agregarRepuesto, productos }: any) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4"> 
       {ordenes.map((o: any) => (
         <div key={o.id} className="bg-white p-4 rounded-2xl shadow-md border-l-8 border-blue-500">
           <div className="flex justify-between items-start">
