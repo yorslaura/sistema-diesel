@@ -87,7 +87,7 @@ export default function Home() {
           {/* El Footer Específico */}
           <div className="bg-pink-50 py-3 px-6 rounded-xl inline-block border border-pink-200 transform -rotate-2">
              <p className="text-sm font-bold text-pink-800 tracking-wide">
-               para (Judith-grosera y malcriada), así mismo.
+               para (Judith-grosera y malcriada)
              </p>
           </div>
         </div>
