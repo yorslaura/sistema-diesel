@@ -19,7 +19,7 @@ export default function Home() {
     <main style={styles.container}>
       {fase === 'jugando' && (
         <div>
-          <h2 style={{ color: '#d63031' }}>¡Dale amor al pollito!</h2>
+          <h2 style={{ color: '#d63031' }}>¡Dale amor al cuinejito!</h2>
           <p style={{ fontSize: '20px', fontWeight: 'bold' }}>Clics restantes: {clics}</p>
           <img 
             src="https://cdn-icons-png.flaticon.com/512/2663/2663067.png" 
