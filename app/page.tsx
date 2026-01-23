@@ -141,7 +141,7 @@ export default function BookApp() {
       case 8:
         return (
           <PageContainer pageNumber={8}>
-            <h2 className="chapter-title">Capítulo 3: "Irnos a un cuerpo"</h2>
+            <h2 className="chapter-title">Capítulo 3: "Irnos a un cuarto"</h2>
             <p className="story-text">
               Pero después del "asesinato virtual", pasaron cosas. La conversación fluyó. Y luego ocurrió esa cosa rara que llamamos "irnos a un cuerpo".
             </p>
@@ -234,7 +234,7 @@ export default function BookApp() {
         return (
           <PageContainer pageNumber={17}>
             <p className="story-text">
-              El silencio mata la confianza. Es un veneno lento. Prometo no dejar que ese silencio entre nosotros.
+              El silencio mata la confianza. Es un veneno lento. Prometo no dejar ese silencio entre nosotros.
             </p>
             <p className="story-text">
               Mejor tomarnos un respiro, contar hasta diez si es necesario, y luego hablar. Siempre hablar.

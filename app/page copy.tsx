@@ -73,13 +73,13 @@ export default function Home() {
         <div className="w-full max-w-md z-10">
           {/* LOGO Y NOMBRE */}
           <div className="text-center mb-10 animate-fade-in-down">
-            <div className="inline-block p-4 rounded-full bg-gradient-to-b from-gray-700 to-black border border-gray-600 shadow-2xl mb-4">
+            <div className="inline-block p-4 rounded-full bg-linear-to-b from-gray-700 to-black border border-gray-600 shadow-2xl mb-4">
               {/* Aquí simulamos el logo con un icono de engranaje grande */}
               <span className="text-6xl">⚙️</span>
             </div>
             <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic">
               ALICAR
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 not-italic">
+              <span className="block text-transparent bg-clip-text bg-linear-to-r from-orange-500 to-red-600 not-italic">
                 AUTOMOTRIZ
               </span>
             </h1>
@@ -104,7 +104,7 @@ export default function Home() {
 
               <button 
                 onClick={handleLogin}
-                className="w-full bg-gradient-to-r from-orange-600 to-red-700 text-white font-black p-4 rounded-2xl shadow-[0_0_20px_rgba(234,88,12,0.4)] hover:shadow-[0_0_30px_rgba(234,88,12,0.6)] active:scale-95 transition-all uppercase tracking-widest"
+                className="w-full bg-linear-to-r from-orange-600 to-red-700 text-white font-black p-4 rounded-2xl shadow-[0_0_20px_rgba(234,88,12,0.4)] hover:shadow-[0_0_30px_rgba(234,88,12,0.6)] active:scale-95 transition-all uppercase tracking-widest"
               >
                 ENTRAR AL SISTEMA
               </button>
