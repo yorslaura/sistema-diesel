@@ -425,11 +425,37 @@ export default function BookApp() {
         .photo-placeholder.p2 { transform: rotate(5deg); margin-top: 20px; }
         .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- ÍNDICE Y CITA --- */
-        .quote-text { font-size: 1.8rem; padding: 0 20px; }
-        .chapter-title { font-size: 2.2rem; margin-bottom: 30px; }
-        .index-list { list-style: none; padding: 0; text-align: left; display: inline-block; }
-        .index-list li { margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px dotted #f48fb1; padding-bottom: 5px; }
+       /* --- ÍNDICE Y CITA --- */
+.quote-text { 
+  font-size: 1.8rem; 
+  padding: 0 20px; 
+  color: #4a142f; 
+}
+
+.chapter-title { 
+  font-size: 2.2rem; 
+  margin-bottom: 30px; 
+  color: #880e4f;
+}
+
+.index-list { 
+  list-style: none; 
+  padding: 0; 
+  text-align: left; 
+  display: inline-block; 
+}
+
+.index-list li { 
+  margin-bottom: 15px; 
+  border-bottom: 1px dotted #f48fb1; 
+  padding-bottom: 5px; 
+}
+
+.index-text {
+  font-size: 1.1rem;
+  color: #4a142f; /* Color oscuro para que se vea bien */
+  font-weight: 500;
+}
 
         /* --- ILUSTRACIÓN FINAL (Página 20) --- */
         .final-illustration-container { width: 100%; }
