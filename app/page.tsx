@@ -82,13 +82,13 @@ export default function BookApp() {
           <PageContainer pageNumber={3}>
             <h2 className="chapter-title">Índice</h2>
             <ul className="index-list">
-              <li>Pág. 4-5: El Vacío Antes de Ti</li>
-              <li>Pág. 6-7: Un Encuentro Peculiar (Y un trago mortal)</li>
-              <li>Pág. 8-9: Conexiones Inesperadas & Familia Virtual</li>
-              <li>Pág. 10-12: La Luz en el Laberinto</li>
-              <li>Pág. 13-15: Mundos Distintos, Un Mismo Destino</li>
-              <li>Pág. 16-19: Nuestra Promesa (El Equipo)</li>
-              <li>Pág. 20: El Futuro que Nos Espera</li>
+              <li><span className="index-text">Pág. 4-5: El Vacío Antes de Ti</span></li>
+              <li><span className="index-text">Pág. 6-7: Un Encuentro Peculiar (Y un trago mortal)</span></li>
+              <li><span className="index-text">Pág. 8-9: Conexiones Inesperadas & Familia Virtual</span></li>
+              <li><span className="index-text">Pág. 10-12: La Luz en el Laberinto</span></li>
+              <li><span className="index-text">Pág. 13-15: Mundos Distintos, Un Mismo Destino</span></li>
+              <li><span className="index-text">Pág. 16-19: Nuestra Promesa (El Equipo)</span></li>
+              <li><span className="index-text">Pág. 20: El Futuro que Nos Espera</span></li>
             </ul>
           </PageContainer>
         );
@@ -141,9 +141,9 @@ export default function BookApp() {
       case 8:
         return (
           <PageContainer pageNumber={8}>
-            <h2 className="chapter-title">Capítulo 3: "Irnos a un cuarto"</h2>
+            <h2 className="chapter-title">Capítulo 3: "Vamos pal cuarto"</h2>
             <p className="story-text">
-              Pero después del "asesinato virtual", pasaron cosas. La conversación fluyó. Y luego ocurrió esa cosa rara que llamamos "irnos a un cuerpo".
+              Pero después del "asesinato virtual", pasaron cosas. La conversación fluyó. Y luego ocurrió esa cosa rara que llamamos "Primer round".
             </p>
              <p className="story-text">
               Qué extraño suena ahora, ¿verdad? Pero así nació todo. En ese espacio extraño, encontramos algo real.
