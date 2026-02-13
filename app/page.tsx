@@ -14,7 +14,6 @@ const LibroJudith = () => {
   const [pagina, setPagina] = useState(0);
   const [final, setFinal] = useState(false);
 
-  // NARRATIVA COMPLETA DE 73 DÍAS (Sin repeticiones)
   const diario: PaginaNarrativa[] = [
     // --- DICIEMBRE: EL CHISPAZO (1-10) ---
     { t: "Día 1: El Encuentro", c: "Todo empezó entre pixeles. Un simple juego nos cruzó, y sin saberlo, estaba conociendo a la mujer que cambiaría mi mundo.", bg: "#fff0f3", texto: "#c9184a" },
@@ -29,7 +28,7 @@ const LibroJudith = () => {
     { t: "Día 10: Vísperas", c: "Mañana sería el día. El día en que todo cambiaría y dejaría que mi alma se abriera por completo.", bg: "#fff0f3", texto: "#c9184a" },
 
     // --- DICIEMBRE: EL COLOR Y EL NIÑO INTERIOR (11-27) ---
-    { t: "14 Dic: Mi Niño Interior", c: "Hoy dejé salir todo lo que soy. Te amé sin reproches, sin barreras. Mi vida se pintó de un color que nunca había visto. (Música: Again - Noah Cyrus)", bg: "#ffccd5", texto: "#a4133c", musica: "https://open.spotify.com/track/2S93v889S6u8i8O9R5G0b8" },
+    { t: "14 Dic: Mi Niño Interior", c: "Hoy dejé salir todo lo que soy. Te amé sin reproches, sin barreras. Mi vida se pintó de un color que nunca había visto. (Música: Again - Noah Cyrus)", bg: "#ffccd5", texto: "#a4133c", musica: "https://open.spotify.com/track/2S97p3XUqM8Nn591G1pYy6" },
     { t: "Día 12: Sin Frenos", c: "Esa vulnerabilidad de amarte como un niño me dio una paz inmensa. Todo a mi alrededor era hermoso.", bg: "#ffccd5", texto: "#a4133c" },
     { t: "Día 13: El Tono Perfecto", c: "Tu risa se volvió mi melodía favorita. El mundo tenía sentido porque tú estabas en él.", bg: "#ffccd5", texto: "#a4133c" },
     { t: "Día 14: Flotando", c: "Empecé a sentir que mis pies no tocaban el suelo. Caminaba hacia ti en un camino de nubes.", bg: "#ffccd5", texto: "#a4133c" },
@@ -67,7 +66,7 @@ const LibroJudith = () => {
     { t: "Día 42: Grietas", c: "El suelo bajo mis pies se agrietaba. Los muros crecían. Pero tu recuerdo aún me daba luz.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 43: Perdido", c: "Me perdí en el laberinto. Quise flotar de nuevo, pero mis alas estaban cansadas de intentarlo.", bg: "#cfd8dc", texto: "#37474f" },
     { t: "Día 44: Thorns", c: "Empezaron a salir espinas. Si flotaba, mi cuerpo se rompería. Si caminaba, me pincharía.", bg: "#cfd8dc", texto: "#37474f" },
-    { t: "Día 45: Sol de Invierno", c: "Sonaba 'Sol' de William. Me sentía tan frágil que cualquier viento me quebraría. (Música: Sol - William)", bg: "#cfd8dc", texto: "#37474f", musica: "https://open.spotify.com/track/4jS0x..." },
+    { t: "Día 45: Sol de Invierno", c: "Sonaba 'Sol' de William. Me sentía tan frágil que cualquier viento me quebraría. (Música: Sol - William)", bg: "#cfd8dc", texto: "#37474f", musica: "https://open.spotify.com/track/4" },
     { t: "Día 46: Cuestionamiento", c: "¿Vale la pena todo esto? Me golpeé la cara y me dije: El amor nunca es fácil. Seguiré.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 47: Paso Rápido", c: "Apreté el paso. Quería salir de aquí y encontrarte, sin importar las espinas.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 48: Laberinto Negro", c: "La oscuridad se cerró. Buscaba la salida, pero solo encontraba más muros de piedra fría.", bg: "#90a4ae", texto: "#1c313a" },
@@ -79,8 +78,8 @@ const LibroJudith = () => {
     { t: "Día 54: Inseguridad", c: "¿Alguna vez me amaste de verdad? Esa pregunta empezó a perseguirme en la oscuridad.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 55: Persistencia", c: "Aun así, seguí. El amor no se trata de que sea fácil, sino de que sea real.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 56: Luz Lejana", c: "Vi un pequeño destello al fondo. No sabía si era la salida o una ilusión.", bg: "#90a4ae", texto: "#1c313a" },
-    { t: "Día 57: Fatiga", c: "Mis piernas pesaban. El laberinto parecía no tener fin. Pero tu estabas al final.", bg: "#90a4ae", texto: "#1c313a" },
-    { t: "Día 58: El Desvío", c: "Casi tomo regreso del camino, pero me obligué a volver. Mi único destino eres tú.", bg: "#90a4ae", texto: "#1c313a" },
+    { t: "Día 57: Fatiga", c: "Mis piernas pesaban. El laberinto parecía no tener fin. Pero Judith estaba al final.", bg: "#90a4ae", texto: "#1c313a" },
+    { t: "Día 58: El Desvío", c: "Casi tomo otro camino, pero me obligué a volver. Mi único destino eres tú.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 59: Agonía de Enero", c: "Terminaba el mes más largo de mi vida. Esperando que febrero trajera algo de calor.", bg: "#90a4ae", texto: "#1c313a" },
 
     // --- FEBRERO: LA ARMADURA Y EL FINAL (60-72) ---
@@ -121,7 +120,7 @@ const LibroJudith = () => {
         }}>
           <div>
             <h3 style={{ color: '#aaa', fontSize: '0.8rem', letterSpacing: '2px' }}>PÁGINA {pagina + 1}</h3>
-            <h2 style={{ color: p.texto, fontSize: '1.8rem', margin: '15px 0' }}>{p.t}</h2>
+            <h2 style={{ color: p.texto === "#ffffff" ? "#512da8" : p.texto, fontSize: '1.8rem', margin: '15px 0' }}>{p.t}</h2>
             <hr style={{ border: 'none', borderTop: `1px solid ${p.bg}`, marginBottom: '20px' }} />
             <p style={{ lineHeight: '1.8', color: '#444', fontSize: '1.1rem', fontStyle: 'italic' }}>
               "{p.c}"
@@ -136,17 +135,16 @@ const LibroJudith = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
             <button onClick={irAtras} disabled={pagina === 0} style={btnS}>Atrás</button>
             <button 
-  onClick={() => pagina === 72 ? setFinal(true) : setPagina(pagina + 1)} 
-  style={{ 
-    ...btnS, 
-    // Si el color del texto es blanco, usamos un rosa fuerte para que se vea
-    backgroundColor: p.texto === "#ffffff" ? "#ff4d6d" : p.texto, 
-    color: '#fff', 
-    border: 'none' 
-  }}
->
-  {pagina === 72 ? "Abrir Corazón" : "Siguiente"}
-</button>
+              onClick={irSiguiente} 
+              style={{ 
+                ...btnS, 
+                backgroundColor: p.texto === "#ffffff" ? "#ff4d6d" : p.texto, 
+                color: '#fff', 
+                border: 'none' 
+              }}
+            >
+              {pagina === 72 ? "Abrir Corazón" : "Siguiente"}
+            </button>
           </div>
         </div>
       ) : (
@@ -161,11 +159,18 @@ const LibroJudith = () => {
           </div>
           <h2 style={{ color: '#ff4d6d' }}>Te amo infinitamente ❤️</h2>
           
-          <div style={{ marginTop: '40px', padding: '30px', border: '3px dashed #ffb6c1', borderRadius: '20px', backgroundColor: '#fff5f7' }}>
-            <p style={{ fontWeight: 'bold' }}>🎁 Lo prometido es deuda...</p>
-            <button onClick={() => alert("¡Aquí va tu sorpresa final, Judith! :3")} style={btnFinal}>VER MI SORPRESA</button>
+          <div style={{ marginTop: '40px', padding: '30px', borderTop: '2px solid #eee' }}>
+            <p style={{ fontStyle: 'italic', color: '#777', fontSize: '1.1rem' }}>
+              "Tengo un regalito que lo voy a cuidar mucho hasta que llegues (o yo vaya)... es de dos orejas grandes, así como tú me gustas."
+            </p>
           </div>
-          <button onClick={() => setFinal(false)} style={{ marginTop: '20px', background: 'none', border: 'none', textDecoration: 'underline', color: '#aaa', cursor: 'pointer' }}>Volver a leer</button>
+
+          <button 
+            onClick={() => { setFinal(false); setPagina(0); }} 
+            style={{ marginTop: '30px', background: 'none', border: 'none', textDecoration: 'underline', color: '#d81b60', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Volver a leer desde el inicio
+          </button>
         </div>
       )}
       <style>{`
@@ -177,6 +182,5 @@ const LibroJudith = () => {
 };
 
 const btnS = { padding: '12px 24px', borderRadius: '30px', border: '1px solid #ddd', cursor: 'pointer', fontWeight: 'bold', transition: '0.3s' };
-const btnFinal = { padding: '18px 40px', backgroundColor: '#ff4d6d', color: '#fff', border: 'none', borderRadius: '40px', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold', boxShadow: '0 10px 20px rgba(255, 77, 109, 0.3)' };
 
 export default LibroJudith;
