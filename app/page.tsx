@@ -1,190 +1,120 @@
-"use client"
-import React, { useState, useEffect } from 'react';
+"use client";
 
-const LibroAmor = () => {
-  const [paginaActual, setPaginaActual] = useState(0);
-  const [mensajeFinal, setMensajeFinal] = useState(false);
+import React, { useState } from 'react';
 
-  // Música mencionada
-  const canciones = {
-    again: "https://open.spotify.com/intl-es/track/2SST997ZgTisv0897yvGZ2", // Noah Cyrus
-    sol: "https://open.spotify.com/intl-es/track/1P6R2hXqQ8I2xLzYfNfO0M"    // Sol - William
-  };
+// Definimos qué información tiene cada página para que TypeScript no se queje
+interface PaginaNarrativa {
+  dia?: string;
+  t: string;
+  c: string;
+  bg: string;
+  texto: string;
+  musica?: string;
+}
 
-  // Generación de los textos para las 73 páginas
-  const generarPaginas = () => {
-    const paginas = [];
-    
-    for (let i = 1; i <= 73; i++) {
-      let contenido = "";
-      let titulo = `Día ${i}`;
-      // Estilo base para las páginas normales (cálido)
-      let estiloPagina = { color: '#444', backgroundColor: '#fff' };
+const LibroJudith = () => {
+  const [pagina, setPagina] = useState(0);
+  const [final, setFinal] = useState(false);
 
-      // LÓGICA DE NARRACIÓN Y ESTILO SEGÚN EL PERIODO
-      if (i === 1) {
-        titulo = "4 de Diciembre: El Inicio";
-        contenido = "Todo empezó en un juego. Quién diría que entre pixeles encontraría el latido que me faltaba. Ese primer encuentro fue la semilla de todo lo que somos hoy.";
-      } else if (i < 10) {
-        contenido = "Aún no había una conexión profunda, pero mi alma ya te reconocía. Sentía que te amaba antes de entender por qué. Eras ese misterio que no quería dejar de resolver.";
-      } else if (i === 11) {
-        titulo = "14 de Diciembre: El Color";
-        contenido = "Empecé a conocerte más y dejé que mi niño interior saliera para amarte sin reproches ni barreras. Mi vida se pintó de un tono hermoso. Dale play a esto: Noah Cyrus - Again.";
-      } else if (i > 11 && i < 28) {
-        contenido = "Empecé a flotar en un camino hacia ti. Noté muros opacos, casi invisibles, pero no les di importancia. Atravesarlos era fácil porque mi meta eras tú.";
-      } else if (i === 28) {
-        titulo = "31 de Diciembre: Fin de Año";
-        contenido = "Pasamos con nuestras familias, pero mi mente estaba contigo. Verte feliz me hacía bien. Te deseé un feliz año sabiendo que quería cada día de este nuevo ciclo a tu lado.";
-      } 
-      
-      // --- PERIODO DE ENERO (CAMBIO DE COLOR A GRIS/NIEBLA) ---
-      else if (i > 28 && i < 60) {
-        // Cambiamos el estilo solo para estas páginas
-        estiloPagina = { color: '#333', backgroundColor: '#e0e0e0' }; 
-        
-        if (i < 45) {
-            titulo = "Enero: Los Muros Notorios";
-            contenido = "Los muros que antes eran invisibles se hicieron reales. Me impedían el paso, pero te grité desde la distancia que seguiría avanzando mientras tú me lo permitieras.";
-        } else {
-            contenido = "Me volví frágil para elevarme sobre los muros. Fue mi error, quizá, pero quería verte. Sonaba 'Sol' de William y yo seguía quitándome capas para flotar más alto, aunque doliera el frío de esta niebla.";
-        }
-      } 
-      // -------------------------------------------------------
+  // 1. Definimos los momentos clave de tu historia
+  const hitos = [
+    { d: 0, t: "04 Dic: El Inicio", c: "Todo empezó en un juego. Entre pixeles y risas, sin saber que estaba encontrando al amor de mi vida.", bg: "#ffebf0", txt: "#d81b60" },
+    { d: 10, t: "14 Dic: Mi niño interior", c: "Ese día te amé sin barreras. Mi vida tuvo color y sonaba Noah Cyrus - Again.", bg: "#fce4ec", txt: "#ad1457", m: "https://open.spotify.com/track/1ST9R0LwSndG06mX6f58pI" },
+    { d: 27, t: "31 Dic: Año Nuevo", c: "Te vi divertirte y me sentí bien. Quería que cada día del nuevo año fuera a tu lado.", bg: "#f8bbd0", txt: "#880e4f" },
+    { d: 40, t: "Enero: Los Muros", c: "Los muros invisibles se hicieron notorios. Grité tu nombre en la distancia: seguiré avanzando si me lo permites.", bg: "#eceff1", txt: "#455a64" },
+    { d: 50, t: "La Fragilidad", c: "Me quité capas para elevarme. Sonaba 'Sol' de William. Mi error fue ser tan frágil que todo me afectaba.", bg: "#cfd8dc", txt: "#37474f", m: "https://open.spotify.com/track/1uL0A4P7R33Q8P4N0X2Q3G" },
+    { d: 65, t: "Febrero: La Armadura", c: "Recordé tu risa y decidí ponerme una armadura fuerte. Ya no soy frágil, ahora me protejo para llegar a ti.", bg: "#b39ddb", txt: "#311b92" },
+    { d: 71, t: "La Niebla", c: "Hoy hay una niebla espesa. No te oigo, pero mi armadura resiste. Solo quiero salir y correr hacia ti.", bg: "#9575cd", txt: "#ffffff" }
+  ];
 
-      else if (i >= 60 && i < 70) {
-        titulo = "Febrero: La Armadura";
-        contenido = "Escuché tu voz y recordé la arruguita de tu rostro al reír. Para sobrevivir al laberinto de espinas, me puse una armadura pesada. Ya no soy tan frágil, ahora me protejo para llegar a ti.";
-      } else {
-        titulo = "Días Recientes: La Niebla y el Silencio";
-        contenido = "Hay una niebla espesa y un silencio frío. Mi armadura es resistente, pero pesa. No escuchas mis quejas porque las palabras no salen, pero aquí sigo, mirándote en mis recuerdos, buscando la salida hacia ti.";
-      }
-
-      paginas.push({ titulo, contenido, estiloPagina, dia: i });
+  // 2. Esta es la función que corregí para que no te dé el error de 'index'
+  const obtenerContenido = (index: number): PaginaNarrativa => {
+    // Buscamos si el día actual es un hito importante
+    const hito = hitos.find(h => h.d === index);
+    if (hito) {
+      return { dia: hito.t.split(':')[0], t: hito.t.split(':')[1] || hito.t, c: hito.c, bg: hito.bg, texto: hito.txt, musica: hito.m };
     }
-    return paginas;
-  };
 
-  const listaPaginas = generarPaginas();
-  const paginaActualData = listaPaginas[paginaActual];
-
-  const irSiguiente = () => {
-    if (paginaActual < listaPaginas.length - 1) {
-      setPaginaActual(paginaActual + 1);
+    // Relleno dinámico para que no se repitan las páginas
+    if (index < 27) {
+      return { t: `Día ${index + 1}`, c: "Seguía flotando en un camino hacia ti, atravesando muros opacos con facilidad.", bg: "#ffebf0", texto: "#d81b60" };
+    } else if (index < 60) {
+      return { t: `Día ${index + 1}`, c: "En el laberinto, buscando tu brillo. Me quité pesos de encima para alcanzarte.", bg: "#eceff1", texto: "#455a64" };
     } else {
-      setMensajeFinal(true);
+      return { t: `Día ${index + 1}`, c: "Avanzando en silencio. Mi armadura es pesada, pero mi mente se hace fuerte con tus recuerdos.", bg: "#b39ddb", texto: "#311b92" };
     }
   };
 
-  const irAtras = () => {
-    if (paginaActual > 0) {
-      setPaginaActual(paginaActual - 1);
-      setMensajeFinal(false);
-    }
-  };
+  const p = obtenerContenido(pagina);
 
   return (
     <div style={{ 
       minHeight: '100vh', 
-      // El fondo general también cambia un poco si es una página "gris"
-      backgroundColor: paginaActualData.estiloPagina.backgroundColor === '#e0e0e0' ? '#cfd8dc' : '#fce4ec', 
+      backgroundColor: p.bg, 
+      transition: 'all 0.8s ease', 
       display: 'flex', 
-      flexDirection: 'column',
+      justifyContent: 'center', 
       alignItems: 'center', 
-      justifyContent: 'center',
       padding: '20px',
-      fontFamily: "'Georgia', serif",
-      transition: 'background-color 0.5s ease'
+      fontFamily: 'serif'
     }}>
-      
-      {!mensajeFinal ? (
+      {!final ? (
         <div style={{
-          width: '100%',
-          maxWidth: '400px',
-          // Aquí se aplica el color de fondo de la página (blanco o gris)
-          backgroundColor: paginaActualData.estiloPagina.backgroundColor,
-          padding: '40px',
-          borderRadius: '10px 50px 50px 10px',
-          boxShadow: '20px 20px 60px rgba(0,0,0,0.1), -20px -20px 60px rgba(255,255,255,0.5)',
-          position: 'relative',
-          minHeight: '500px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          transition: 'background-color 0.5s ease'
+          width: '100%', maxWidth: '420px', backgroundColor: '#fff', borderRadius: '15px 40px 40px 15px', 
+          padding: '40px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)', borderLeft: `12px solid ${p.texto}`,
+          position: 'relative'
         }}>
-          <div>
-            <h2 style={{ color: '#d81b60', textAlign: 'center' }}>{paginaActualData.titulo}</h2>
-            <hr style={{ border: '0.5px solid #f8bbd0', opacity: 0.5 }} />
-            <p style={{ 
-              fontSize: '1.1rem', 
-              lineHeight: '1.6', 
-              // Se aplica el color de texto (más oscuro en fondo gris)
-              color: paginaActualData.estiloPagina.color, 
-              fontStyle: 'italic',
-              marginTop: '30px' 
-            }}>
-              "{paginaActualData.contenido}"
-            </p>
-            
-            {/* Links de música dinámicos */}
-            {paginaActual === 10 && <a href={canciones.again} target="_blank" rel="noreferrer" style={{color: '#1DB954', fontSize: '0.9rem', display:'block', marginTop:'20px'}}>🎵 Escuchar Again - Noah Cyrus</a>}
-            {paginaActual === 44 && <a href={canciones.sol} target="_blank" rel="noreferrer" style={{color: '#1DB954', fontSize: '0.9rem', display:'block', marginTop:'20px'}}>🎵 Escuchar Sol - William</a>}
-          </div>
+          <span style={{ color: '#aaa', fontSize: '0.9rem' }}>{p.dia || `Día ${pagina + 1}`}</span>
+          <h2 style={{ color: p.texto, marginTop: '10px' }}>{p.t}</h2>
+          <p style={{ lineHeight: '1.8', color: '#444', fontStyle: 'italic', minHeight: '150px' }}>
+            "{p.c}"
+          </p>
+          
+          {p.musica && (
+            <a href={p.musica} target="_blank" rel="noreferrer" style={{ color: '#1DB954', fontSize: '0.8rem', textDecoration: 'none', display: 'block', marginBottom: '20px' }}>
+              🎵 Escuchar canción del día
+            </a>
+          )}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
-            <button onClick={irAtras} disabled={paginaActual === 0} style={btnEstilo}>Anterior</button>
-            <span style={{ fontSize: '0.8rem', color: '#aaa', alignSelf:'center' }}>Pág {paginaActual + 1} de 73</span>
-            <button onClick={irSiguiente} style={btnEstilo}>Siguiente</button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <button onClick={() => setPagina(pagina - 1)} disabled={pagina === 0} style={btn}>Atrás</button>
+            <span style={{ fontSize: '0.7rem', color: '#ccc' }}>{pagina + 1} / 73</span>
+            <button 
+              onClick={() => pagina === 72 ? setFinal(true) : setPagina(pagina + 1)} 
+              style={{ ...btn, backgroundColor: p.texto, color: '#fff', border: 'none' }}
+            >
+              {pagina === 72 ? "Abrir Corazón" : "Siguiente"}
+            </button>
           </div>
         </div>
       ) : (
-        /* MENSAJE FINAL DEL 14 DE FEBRERO */
-        <div style={{
-          width: '100%',
-          maxWidth: '500px',
-          backgroundColor: 'white',
-          padding: '40px',
-          borderRadius: '20px',
-          textAlign: 'center',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-          animation: 'fadeIn 1.5s'
+        <div style={{ 
+          maxWidth: '550px', backgroundColor: '#fff', padding: '50px', borderRadius: '30px', 
+          textAlign: 'center', boxShadow: '0 10px 50px rgba(216, 27, 96, 0.2)', animation: 'aparecer 1s' 
         }}>
           <h1 style={{ color: '#d81b60' }}>14 de Febrero</h1>
-          <p style={{ fontSize: '1.2rem', color: '#333', lineHeight: '1.5' }}>
-            <strong>Judith,</strong> eres la persona más valiente que conocí, la más responsable y hermosa del alma.
+          <p style={{ fontSize: '1.2rem', color: '#333' }}>
+            <strong>Judith,</strong> eres la persona más valiente y hermosa que conozco.
           </p>
-          <p style={{ color: '#555', lineHeight: '1.5' }}>
-            No me enamoré de un camino fácil, me encanta este camino contigo. Pero necesito que me mires, que me des mi lugar sin tener que pedirlo. Quiero que esa niebla se vaya con el suspiro de tus labios.
+          <p style={{ margin: '25px 0', color: '#555', lineHeight: '1.6' }}>
+            No quiero que mis sentimientos sean "quejas". Solo quiero que me mires, que me des mi lugar. Esta armadura es pesada, pero la llevo por ti. ¿Soy el hombre que esperas?
           </p>
-          <h3 style={{ color: '#ff4d6d', marginTop: '25px' }}>¿Eres la mujer que espero? Dame una señal para seguir intentándolo...</h3>
-          <p style={{ fontSize: '1.8rem', margin: '20px 0' }}>Te amo demasiado. ❤️</p>
+          <h2 style={{ color: '#ff4d6d' }}>Te amo demasiado, mi señora esposa ❤️</h2>
           
-          <div style={{ marginTop: '30px', padding: '20px', border: '2px dashed #ffb6c1', borderRadius: '10px', backgroundColor: '#fff0f5' }}>
-            <p style={{fontSize: '1.1rem'}}>🎁 <b>Tengo una sorpresa para ti...</b></p>
-            <button onClick={() => alert("¡Aquí pones tu sorpresa real! (Puede ser una foto, un video, o lo que tengas planeado)")} style={{...btnEstilo, backgroundColor: '#ff4d6d', color: 'white', border: 'none', padding: '12px 25px', fontSize: '1rem'}}>Ver Sorpresa</button>
+          <div style={{ marginTop: '40px', padding: '25px', border: '2px dashed #ffb6c1', borderRadius: '15px', backgroundColor: '#fff5f7' }}>
+            <p>🎁 <b>Tengo algo más para ti...</b></p>
+            <button onClick={() => alert("¡Sorpresa! (Aquí puedes poner tu regalo)")} style={btnFinal}>VER SORPRESA :3</button>
           </div>
-          
-          <button onClick={() => setMensajeFinal(false)} style={{ marginTop: '30px', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer', color: '#999' }}>Regresar al libro</button>
         </div>
       )}
-
       <style>{`
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        button:disabled { opacity: 0.3; cursor: not-allowed; }
+        @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
       `}</style>
     </div>
   );
 };
 
-const btnEstilo = {
-  padding: '10px 20px',
-  borderRadius: '25px',
-  border: '1px solid #f8bbd0',
-  backgroundColor: '#fff',
-  cursor: 'pointer',
-  transition: '0.3s',
-  fontWeight: 'bold',
-  color: '#d81b60'
-};
+const btn = { padding: '8px 18px', border: '1px solid #eee', borderRadius: '20px', cursor: 'pointer', fontSize: '0.9rem' };
+const btnFinal = { padding: '15px 30px', backgroundColor: '#ff4d6d', color: '#fff', border: 'none', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' };
 
-export default LibroAmor;
+export default LibroJudith;
