@@ -1,546 +1,189 @@
-'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
-// --- COMPONENTE BASE DE PÁGINA (El marco bonito) ---
-const PageContainer = ({ children, pageNumber, isCover = false }: { children: React.ReactNode, pageNumber: number, isCover?: boolean }) => {
-  // Estilo diferente para páginas pares e impares para simular un libro abierto
-  const isEven = pageNumber % 2 === 0;
-  
+const LibroAmor = () => {
+  const [paginaActual, setPaginaActual] = useState(0);
+  const [mensajeFinal, setMensajeFinal] = useState(false);
+
+  // Música mencionada
+  const canciones = {
+    again: "https://open.spotify.com/intl-es/track/2SST997ZgTisv0897yvGZ2", // Noah Cyrus
+    sol: "https://open.spotify.com/intl-es/track/1P6R2hXqQ8I2xLzYfNfO0M"    // Sol - William
+  };
+
+  // Generación de los textos para las 73 páginas
+  const generarPaginas = () => {
+    const paginas = [];
+    
+    for (let i = 1; i <= 73; i++) {
+      let contenido = "";
+      let titulo = `Día ${i}`;
+      // Estilo base para las páginas normales (cálido)
+      let estiloPagina = { color: '#444', backgroundColor: '#fff' };
+
+      // LÓGICA DE NARRACIÓN Y ESTILO SEGÚN EL PERIODO
+      if (i === 1) {
+        titulo = "4 de Diciembre: El Inicio";
+        contenido = "Todo empezó en un juego. Quién diría que entre pixeles encontraría el latido que me faltaba. Ese primer encuentro fue la semilla de todo lo que somos hoy.";
+      } else if (i < 10) {
+        contenido = "Aún no había una conexión profunda, pero mi alma ya te reconocía. Sentía que te amaba antes de entender por qué. Eras ese misterio que no quería dejar de resolver.";
+      } else if (i === 11) {
+        titulo = "14 de Diciembre: El Color";
+        contenido = "Empecé a conocerte más y dejé que mi niño interior saliera para amarte sin reproches ni barreras. Mi vida se pintó de un tono hermoso. Dale play a esto: Noah Cyrus - Again.";
+      } else if (i > 11 && i < 28) {
+        contenido = "Empecé a flotar en un camino hacia ti. Noté muros opacos, casi invisibles, pero no les di importancia. Atravesarlos era fácil porque mi meta eras tú.";
+      } else if (i === 28) {
+        titulo = "31 de Diciembre: Fin de Año";
+        contenido = "Pasamos con nuestras familias, pero mi mente estaba contigo. Verte feliz me hacía bien. Te deseé un feliz año sabiendo que quería cada día de este nuevo ciclo a tu lado.";
+      } 
+      
+      // --- PERIODO DE ENERO (CAMBIO DE COLOR A GRIS/NIEBLA) ---
+      else if (i > 28 && i < 60) {
+        // Cambiamos el estilo solo para estas páginas
+        estiloPagina = { color: '#333', backgroundColor: '#e0e0e0' }; 
+        
+        if (i < 45) {
+            titulo = "Enero: Los Muros Notorios";
+            contenido = "Los muros que antes eran invisibles se hicieron reales. Me impedían el paso, pero te grité desde la distancia que seguiría avanzando mientras tú me lo permitieras.";
+        } else {
+            contenido = "Me volví frágil para elevarme sobre los muros. Fue mi error, quizá, pero quería verte. Sonaba 'Sol' de William y yo seguía quitándome capas para flotar más alto, aunque doliera el frío de esta niebla.";
+        }
+      } 
+      // -------------------------------------------------------
+
+      else if (i >= 60 && i < 70) {
+        titulo = "Febrero: La Armadura";
+        contenido = "Escuché tu voz y recordé la arruguita de tu rostro al reír. Para sobrevivir al laberinto de espinas, me puse una armadura pesada. Ya no soy tan frágil, ahora me protejo para llegar a ti.";
+      } else {
+        titulo = "Días Recientes: La Niebla y el Silencio";
+        contenido = "Hay una niebla espesa y un silencio frío. Mi armadura es resistente, pero pesa. No escuchas mis quejas porque las palabras no salen, pero aquí sigo, mirándote en mis recuerdos, buscando la salida hacia ti.";
+      }
+
+      paginas.push({ titulo, contenido, estiloPagina, dia: i });
+    }
+    return paginas;
+  };
+
+  const listaPaginas = generarPaginas();
+  const paginaActualData = listaPaginas[paginaActual];
+
+  const irSiguiente = () => {
+    if (paginaActual < listaPaginas.length - 1) {
+      setPaginaActual(paginaActual + 1);
+    } else {
+      setMensajeFinal(true);
+    }
+  };
+
+  const irAtras = () => {
+    if (paginaActual > 0) {
+      setPaginaActual(paginaActual - 1);
+      setMensajeFinal(false);
+    }
+  };
+
   return (
-    <div className={`book-page ${isCover ? 'cover-page' : ''} fade-in`}>
-      <div className="content-frame">
-        {children}
-      </div>
-      {!isCover && (
-        <div className="page-number">
-           — {pageNumber} —
+    <div style={{ 
+      minHeight: '100vh', 
+      // El fondo general también cambia un poco si es una página "gris"
+      backgroundColor: paginaActualData.estiloPagina.backgroundColor === '#e0e0e0' ? '#cfd8dc' : '#fce4ec', 
+      display: 'flex', 
+      flexDirection: 'column',
+      alignItems: 'center', 
+      justifyContent: 'center',
+      padding: '20px',
+      fontFamily: "'Georgia', serif",
+      transition: 'background-color 0.5s ease'
+    }}>
+      
+      {!mensajeFinal ? (
+        <div style={{
+          width: '100%',
+          maxWidth: '400px',
+          // Aquí se aplica el color de fondo de la página (blanco o gris)
+          backgroundColor: paginaActualData.estiloPagina.backgroundColor,
+          padding: '40px',
+          borderRadius: '10px 50px 50px 10px',
+          boxShadow: '20px 20px 60px rgba(0,0,0,0.1), -20px -20px 60px rgba(255,255,255,0.5)',
+          position: 'relative',
+          minHeight: '500px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          transition: 'background-color 0.5s ease'
+        }}>
+          <div>
+            <h2 style={{ color: '#d81b60', textAlign: 'center' }}>{paginaActualData.titulo}</h2>
+            <hr style={{ border: '0.5px solid #f8bbd0', opacity: 0.5 }} />
+            <p style={{ 
+              fontSize: '1.1rem', 
+              lineHeight: '1.6', 
+              // Se aplica el color de texto (más oscuro en fondo gris)
+              color: paginaActualData.estiloPagina.color, 
+              fontStyle: 'italic',
+              marginTop: '30px' 
+            }}>
+              "{paginaActualData.contenido}"
+            </p>
+            
+            {/* Links de música dinámicos */}
+            {paginaActual === 10 && <a href={canciones.again} target="_blank" rel="noreferrer" style={{color: '#1DB954', fontSize: '0.9rem', display:'block', marginTop:'20px'}}>🎵 Escuchar Again - Noah Cyrus</a>}
+            {paginaActual === 44 && <a href={canciones.sol} target="_blank" rel="noreferrer" style={{color: '#1DB954', fontSize: '0.9rem', display:'block', marginTop:'20px'}}>🎵 Escuchar Sol - William</a>}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
+            <button onClick={irAtras} disabled={paginaActual === 0} style={btnEstilo}>Anterior</button>
+            <span style={{ fontSize: '0.8rem', color: '#aaa', alignSelf:'center' }}>Pág {paginaActual + 1} de 73</span>
+            <button onClick={irSiguiente} style={btnEstilo}>Siguiente</button>
+          </div>
+        </div>
+      ) : (
+        /* MENSAJE FINAL DEL 14 DE FEBRERO */
+        <div style={{
+          width: '100%',
+          maxWidth: '500px',
+          backgroundColor: 'white',
+          padding: '40px',
+          borderRadius: '20px',
+          textAlign: 'center',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+          animation: 'fadeIn 1.5s'
+        }}>
+          <h1 style={{ color: '#d81b60' }}>14 de Febrero</h1>
+          <p style={{ fontSize: '1.2rem', color: '#333', lineHeight: '1.5' }}>
+            <strong>Judith,</strong> eres la persona más valiente que conocí, la más responsable y hermosa del alma.
+          </p>
+          <p style={{ color: '#555', lineHeight: '1.5' }}>
+            No me enamoré de un camino fácil, me encanta este camino contigo. Pero necesito que me mires, que me des mi lugar sin tener que pedirlo. Quiero que esa niebla se vaya con el suspiro de tus labios.
+          </p>
+          <h3 style={{ color: '#ff4d6d', marginTop: '25px' }}>¿Eres la mujer que espero? Dame una señal para seguir intentándolo...</h3>
+          <p style={{ fontSize: '1.8rem', margin: '20px 0' }}>Te amo demasiado. ❤️</p>
+          
+          <div style={{ marginTop: '30px', padding: '20px', border: '2px dashed #ffb6c1', borderRadius: '10px', backgroundColor: '#fff0f5' }}>
+            <p style={{fontSize: '1.1rem'}}>🎁 <b>Tengo una sorpresa para ti...</b></p>
+            <button onClick={() => alert("¡Aquí pones tu sorpresa real! (Puede ser una foto, un video, o lo que tengas planeado)")} style={{...btnEstilo, backgroundColor: '#ff4d6d', color: 'white', border: 'none', padding: '12px 25px', fontSize: '1rem'}}>Ver Sorpresa</button>
+          </div>
+          
+          <button onClick={() => setMensajeFinal(false)} style={{ marginTop: '30px', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer', color: '#999' }}>Regresar al libro</button>
         </div>
       )}
-       {/* Decoración de esquinas (rosas SVG simplificadas) */}
-       <div className="corner-decoration top-left">🌷</div>
-       <div className="corner-decoration top-right">🌷</div>
-       {!isCover && <div className="corner-decoration bottom-left">🌷</div>}
-    </div>
-  )
-}
 
-// --- LA APLICACIÓN PRINCIPAL ---
-export default function BookApp() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 20;
-
-  const nextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  }
-
-  const prevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  }
-
-  // --- CONTENIDO DEL LIBRO ---
-  const renderPageContent = () => {
-    switch (currentPage) {
-      // --- PORTADA ---
-      case 1:
-        return (
-          <PageContainer pageNumber={1} isCover={true}>
-            <div className="cover-content">
-              <h1 className="main-title">Pixeles & Destino</h1>
-              <h2 className="sub-title">Nuestra Historia Improbable</h2>
-              <div className="collage-container">
-                {/* IMPORTANTE: Para que estas fotos se vean:
-                  1. Guarda tus fotos como 'foto1.jpg' y 'foto2.jpg'.
-                  2. Ponlas DENTRO de la carpeta 'public' de tu proyecto en VS Code.
-                */}
-                <div className="photo-placeholder p1">
-                  <img src="/foto1.jpg" alt="Foto 1" onError={(e) => e.currentTarget.src='https://placehold.co/200x250/pink/white?text=Tu+Foto+Aqui+1'} />
-                </div>
-                <div className="photo-placeholder p2">
-                  <img src="/foto2.jpg" alt="Foto 2" onError={(e) => e.currentTarget.src='https://placehold.co/200x250/pink/white?text=Tu+Foto+Aqui+2'} />
-                </div>
-              </div>
-              <p className="cover-footer">Felices 20 Años, Mi Niña</p>
-            </div>
-          </PageContainer>
-        );
-      
-      // --- FRASE INICIAL ---
-      case 2:
-        return (
-          <PageContainer pageNumber={2}>
-             <div className="quote-page">
-               <p className="quote-text">
-                 "En el caos de un mundo digital, donde todo es efímero, encontré la realidad más hermosa: tu luz guiándome a casa."
-               </p>
-             </div>
-          </PageContainer>
-        );
-
-      // --- ÍNDICE ---
-      case 3:
-        return (
-          <PageContainer pageNumber={3}>
-            <h2 className="chapter-title">Índice</h2>
-            <ul className="index-list">
-              <li><span className="index-text">Pág. 4-5: El Vacío Antes de Ti</span></li>
-              <li><span className="index-text">Pág. 6-7: Un Encuentro Peculiar (Y un trago mortal)</span></li>
-              <li><span className="index-text">Pág. 8-9: Conexiones Inesperadas & Familia Virtual</span></li>
-              <li><span className="index-text">Pág. 10-12: La Luz en el Laberinto</span></li>
-              <li><span className="index-text">Pág. 13-15: Mundos Distintos, Un Mismo Destino</span></li>
-              <li><span className="index-text">Pág. 16-19: Nuestra Promesa (El Equipo)</span></li>
-              <li><span className="index-text">Pág. 20: El Futuro que Nos Espera</span></li>
-            </ul>
-          </PageContainer>
-        );
-
-      // --- LA HISTORIA (Páginas 4 a 19) ---
-      case 4:
-        return (
-          <PageContainer pageNumber={4}>
-            <h2 className="chapter-title">Capítulo 1: El Vacío</h2>
-            <p className="story-text">
-              Toda gran historia de aventura comienza en un lugar oscuro. La mía no fue diferente.
-            </p>
-            <p className="story-text">
-              Estaba ahí, "tirado" en un juego. No era solo un personaje pixelado en el suelo; era un reflejo de cómo me sentía por dentro. Destrozado. Sin ganas.
-            </p>
-          </PageContainer>
-        );
-        case 5:
-          return (
-            <PageContainer pageNumber={5}>
-              <p className="story-text">
-                 El aburrimiento era una niebla espesa que me rodeaba. El mundo digital parecía tan gris como el real. No esperaba nada, no buscaba a nadie. Solo existía en ese espacio vacío.
-              </p>
-              <div className="divider">❦</div>
-            </PageContainer>
-          );
-      case 6:
-        return (
-          <PageContainer pageNumber={6}>
-             <h2 className="chapter-title">Capítulo 2: La Invitación Mortal</h2>
-            <p className="story-text">
-              Pero entonces, el guion cambió de repente. Llegó alguien. Un destello de color en mi pantalla monocromática. Ese alguien eras tú.
-            </p>
-            <p className="story-text">
-              Con una audacia que me sorprendió, me invitaste a tomar un trago.
-            </p>
-          </PageContainer>
-        );
-      case 7:
-        return (
-          <PageContainer pageNumber={7}>
-            <p className="story-text">
-              Pensé que era un gesto amable... hasta que, bueno, ¡me mataste! Jaja. Vaya manera de presentarse.
-            </p>
-            <p className="story-text highlight">
-              Cada historia de amor tiene un inicio de película, el nuestro fue una comedia de acción bastante peculiar.
-            </p>
-          </PageContainer>
-        );
-      case 8:
-        return (
-          <PageContainer pageNumber={8}>
-            <h2 className="chapter-title">Capítulo 3: "Vamos pal cuarto"</h2>
-            <p className="story-text">
-              Pero después del "asesinato virtual", pasaron cosas. La conversación fluyó. Y luego ocurrió esa cosa rara que llamamos "Primer round".
-            </p>
-             <p className="story-text">
-              Qué extraño suena ahora, ¿verdad? Pero así nació todo. En ese espacio extraño, encontramos algo real.
-            </p>
-          </PageContainer>
-        );
-      case 9:
-        return (
-          <PageContainer pageNumber={9}>
-             <p className="story-text">
-              Y la locura continuó cuando me presentaste a tus "padres de Roblox". Jaja.
-            </p>
-            <p className="story-text">
-              Era un juego, sí, pero la conexión que estábamos construyendo no tenía nada de artificial. Era el inicio de nuestra propia pequeña familia.
-            </p>
-          </PageContainer>
-        );
-       case 10:
-        return (
-          <PageContainer pageNumber={10}>
-            <h2 className="chapter-title">Capítulo 4: La Luz del Túnel</h2>
-            <p className="story-text">
-              Quiero ponerme serio un momento. No sé si te das cuenta de lo que hiciste por mí.
-            </p>
-            <p className="story-text">
-              Apareciste como una luz potente y cálida en un túnel que yo sentía que no tenía fin. Estaba perdido en la oscuridad de mis propios pensamientos.
-            </p>
-          </PageContainer>
-        );
-      case 11:
-        return (
-          <PageContainer pageNumber={11}>
-             <p className="story-text">
-              Me tomaste de la mano (virtualmente al principio, pero con fuerza real) y me guiaste.
-            </p>
-            <p className="story-text">
-              El laberinto en el que estaba atrapado empezó a tener sentido porque tú conocías la salida.
-            </p>
-          </PageContainer>
-        );
-      case 12:
-        return (
-          <PageContainer pageNumber={12}>
-             <p className="story-text">
-              Yo creía que mi camino estaba roto, lleno de baches imposibles de reparar. Tú no solo me mostraste que se podía arreglar, sino que me ayudaste a armar un camino nuevo, ladrillo por ladrillo, con paciencia y cariño.
-            </p>
-             <div className="divider">❦</div>
-          </PageContainer>
-        );
-      case 13:
-        return (
-          <PageContainer pageNumber={13}>
-            <h2 className="chapter-title">Capítulo 5: Mundos Distintos</h2>
-            <p className="story-text">
-              Somos de mundos distintos. Tal vez no en el sentido de Roblox, sino en la vida real. Tenemos orígenes diferentes, vidas diferentes.
-            </p>
-          </PageContainer>
-        );
-      case 14:
-        return (
-          <PageContainer pageNumber={14}>
-            <p className="story-text">
-              Pero el destino es caprichoso y sabio. Decidió unir esos dos mundos a través de una pantalla, probando que no hay fronteras para dos almas que deben encontrarse.
-            </p>
-          </PageContainer>
-        );
-      case 15:
-        return (
-          <PageContainer pageNumber={15}>
-            <p className="story-text">
-              No sé qué nos espera el futuro. Es un libro que aún no hemos escrito. Pero de algo estoy seguro: quiero que tú estés en cada una de sus próximas páginas.
-            </p>
-          </PageContainer>
-        );
-      case 16:
-        return (
-          <PageContainer pageNumber={16}>
-            <h2 className="chapter-title">Capítulo 6: Nuestra Promesa</h2>
-            <p className="story-text">
-              Hoy, en tu cumpleaños número 20, quiero hacerte una promesa para nuestro futuro.
-            </p>
-            <p className="story-text">
-              Prometo que cada problema que tengamos, no lo guardaremos.
-            </p>
-          </PageContainer>
-        );
-      case 17:
-        return (
-          <PageContainer pageNumber={17}>
-            <p className="story-text">
-              El silencio mata la confianza. Es un veneno lento. Prometo no dejar ese silencio entre nosotros.
-            </p>
-            <p className="story-text">
-              Mejor tomarnos un respiro, contar hasta diez si es necesario, y luego hablar. Siempre hablar.
-            </p>
-          </PageContainer>
-        );
-      case 18:
-        return (
-          <PageContainer pageNumber={18}>
-            <p className="story-text highlight">
-              Que cuando haya un problema, tú y yo nunca seamos enemigos.
-            </p>
-             <p className="story-text">
-              Recuérdalo siempre: el problema es el enemigo. Tú y yo somos el equipo que lucha unido contra él.
-            </p>
-          </PageContainer>
-        );
-       case 19:
-        return (
-          <PageContainer pageNumber={19}>
-             <p className="story-text final-words">
-              Gracias por sacarme del juego y traerme a la vida.
-            </p>
-            <p className="story-text final-words">
-              Feliz cumpleaños, mi amor. Esto es solo el comienzo.
-            </p>
-             <div className="divider">❤</div>
-          </PageContainer>
-        );
-
-      // --- PÁGINA FINAL (Ilustración de Distancia/Encuentro) ---
-      case 20:
-        return (
-          <PageContainer pageNumber={20}>
-            <div className="final-illustration-container">
-              <h2 className="chapter-title">Hasta que los pixeles se vuelvan piel</h2>
-              
-              <div className="distance-graphic">
-                <div className="location-pin left">
-                  <span className="pin-icon">📍</span>
-                  <span className="label">Mi Mundo</span>
-                </div>
-                
-                <div className="connection-line">
-                  <div className="dotted-line"></div>
-                  <div className="traveling-heart">✈️❤️</div>
-                </div>
-
-                <div className="location-pin right">
-                  <span className="pin-icon">📍</span>
-                  <span className="label">Tu Mundo</span>
-                </div>
-              </div>
-              
-              <p className="final-caption">
-                La distancia es solo un mapa esperando ser doblado. Pronto, el punto A y el punto B serán el mismo lugar: <br/> <b>Nosotros.</b>
-              </p>
-            </div>
-          </PageContainer>
-        );
-      default:
-        return null;
-    }
-  }
-
-  return (
-    <main className="book-wrapper">
-      {/* ESTILOS CSS INTEGRADOS (Para asegurar que todo se vea bien sin archivos extra) */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
-
-        body, html {
-          margin: 0;
-          padding: 0;
-          height: 100%;
-          background-color: #fce4ec; /* Fondo rosa muy suave externo */
-        }
-        
-        /* --- ESTRUCTURA PRINCIPAL --- */
-        .book-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 100vh;
-          padding: 20px;
-          font-family: 'Lora', serif;
-          background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f48fb1' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        /* --- EL CONTENEDOR DE LA PÁGINA (El Libro Físico) --- */
-        .book-page {
-          width: 90%;
-          max-width: 500px;
-          height: 700px;
-          background-color: #fff0f6; /* Rosa casi blanco para las páginas */
-          border: 8px solid #f8bbd0; /* Borde rosa elegante */
-          box-shadow: 0 10px 30px rgba(233, 30, 99, 0.2), inset 0 0 20px rgba(233, 30, 99, 0.05);
-          border-radius: 12px 40px 40px 12px;
-          position: relative;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .cover-page {
-          background: linear-gradient(135deg, #f8bbd0 0%, #fce4ec 100%);
-          border-color: #ec407a;
-        }
-
-        /* --- MARCO DE CONTENIDO INTERNO --- */
-        .content-frame {
-          flex: 1;
-          padding: 40px 30px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          z-index: 10;
-        }
-
-        /* --- TEXTOS Y TIPOGRAFÍA --- */
-        h1, h2, .quote-text, .main-title {
-          font-family: 'Dancing Script', cursive;
-          color: #880e4f;
-        }
-
-        .story-text {
-          font-size: 1.15rem;
-          line-height: 1.8;
-          color: #4a142f;
-          margin-bottom: 25px;
-        }
-
-        .highlight {
-          font-weight: 600;
-          color: #c2185b;
-          font-style: italic;
-        }
-
-        .divider {
-          font-size: 2rem;
-          color: #f48fb1;
-          margin: 20px 0;
-        }
-        
-        /* --- ELEMENTOS ESPECÍFICOS DE PÁGINA --- */
-        .page-number {
-          text-align: center;
-          font-family: 'Dancing Script', cursive;
-          font-size: 1.2rem;
-          color: #ad1457;
-          padding-bottom: 15px;
-          width: 100%;
-        }
-
-        .corner-decoration {
-          position: absolute;
-          font-size: 2rem;
-          opacity: 0.3;
-        }
-        .top-left { top: 10px; left: 15px; transform: rotate(-45deg); }
-        .top-right { top: 10px; right: 15px; transform: rotate(45deg); }
-        .bottom-left { bottom: 10px; left: 15px; transform: rotate(-135deg); }
-        .bottom-right { bottom: 10px; right: 15px; transform: rotate(135deg); }
-
-        /* --- PORTADA --- */
-        .main-title { font-size: 3.5rem; margin-bottom: 10px; }
-        .sub-title { font-size: 1.5rem; margin-bottom: 30px; color: #c2185b; }
-        .cover-footer { margin-top: auto; font-weight: bold; color: #880e4f; }
-        
-        .collage-container {
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-          margin: 30px 0;
-        }
-        .photo-placeholder {
-          width: 140px;
-          height: 180px;
-          background-color: #f06292;
-          border: 4px solid #fff;
-          box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
-          overflow: hidden;
-          transform: rotate(-5deg);
-        }
-        .photo-placeholder.p2 { transform: rotate(5deg); margin-top: 20px; }
-        .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-
-       /* --- ÍNDICE Y CITA --- */
-.quote-text { 
-  font-size: 1.8rem; 
-  padding: 0 20px; 
-  color: #4a142f; 
-}
-
-.chapter-title { 
-  font-size: 2.2rem; 
-  margin-bottom: 30px; 
-  color: #880e4f;
-}
-
-.index-list { 
-  list-style: none; 
-  padding: 0; 
-  text-align: left; 
-  display: inline-block; 
-}
-
-.index-list li { 
-  margin-bottom: 15px; 
-  border-bottom: 1px dotted #f48fb1; 
-  padding-bottom: 5px; 
-}
-
-.index-text {
-  font-size: 1.1rem;
-  color: #4a142f; /* Color oscuro para que se vea bien */
-  font-weight: 500;
-}
-
-        /* --- ILUSTRACIÓN FINAL (Página 20) --- */
-        .final-illustration-container { width: 100%; }
-        .distance-graphic {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin: 60px 0;
-          padding: 0 20px;
-          position: relative;
-        }
-        .location-pin { display: flex; flex-direction: column; align-items: center; z-index: 2; }
-        .pin-icon { font-size: 3rem; }
-        .label { font-weight: bold; color: #880e4f; margin-top: 5px; }
-        
-        .connection-line {
-          position: absolute;
-          top: 50%;
-          left: 50px;
-          right: 50px;
-          height: 2px;
-        }
-        .dotted-line {
-          width: 100%;
-          height: 100%;
-          border-top: 3px dotted #ec407a;
-        }
-        .traveling-heart {
-          position: absolute;
-          top: -20px;
-          left: 50%;
-          font-size: 2rem;
-          animation: travel 3s ease-in-out infinite alternate;
-        }
-        .final-caption { font-size: 1.3rem; color: #880e4f; }
-
-        /* --- CONTROLES DE NAVEGACIÓN --- */
-        .controls {
-          margin-top: 25px;
-          display: flex;
-          gap: 20px;
-          align-items: center;
-          background: rgba(255, 255, 255, 0.8);
-          padding: 10px 25px;
-          border-radius: 30px;
-          box-shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
-        }
-        .nav-btn {
-          background-color: #ec407a;
-          color: white;
-          border: none;
-          padding: 12px 24px;
-          border-radius: 25px;
-          font-family: 'Lora', serif;
-          font-weight: bold;
-          cursor: pointer;
-          transition: all 0.2s;
-          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .nav-btn:hover:not(:disabled) { background-color: #d81b60; transform: translateY(-2px); }
-        .nav-btn:disabled { background-color: #f8bbd0; cursor: not-allowed; box-shadow: none; }
-        .page-indicator { font-weight: bold; color: #c2185b; }
-
-        /* --- ANIMACIONES --- */
-        .fade-in { animation: fadeIn 0.8s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes travel { from { left: 10%; } to { left: 80%; } }
-
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
       `}</style>
+    </div>
+  );
+};
 
-      {/* --- EL ÁREA DEL LIBRO --- */}
-      {renderPageContent()}
+const btnEstilo = {
+  padding: '10px 20px',
+  borderRadius: '25px',
+  border: '1px solid #f8bbd0',
+  backgroundColor: '#fff',
+  cursor: 'pointer',
+  transition: '0.3s',
+  fontWeight: 'bold',
+  color: '#d81b60'
+};
 
-      {/* --- BOTONES PARA PASAR PÁGINA --- */}
-      <div className="controls">
-        <button className="nav-btn" onClick={prevPage} disabled={currentPage === 1}>
-          Anterior
-        </button>
-        <span className="page-indicator">
-          {currentPage} / {totalPages}
-        </span>
-        <button className="nav-btn" onClick={nextPage} disabled={currentPage === totalPages}>
-          Siguiente
-        </button>
-      </div>
-    </main>
-  )
-}
+export default LibroAmor;
