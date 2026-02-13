@@ -135,9 +135,18 @@ const LibroJudith = () => {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
             <button onClick={irAtras} disabled={pagina === 0} style={btnS}>Atrás</button>
-            <button onClick={irSiguiente} style={{ ...btnS, backgroundColor: p.texto, color: '#fff', border: 'none' }}>
-              {pagina === 72 ? "Abrir Corazón" : "Siguiente"}
-            </button>
+            <button 
+  onClick={() => pagina === 72 ? setFinal(true) : setPagina(pagina + 1)} 
+  style={{ 
+    ...btnS, 
+    // Si el color del texto es blanco, usamos un rosa fuerte para que se vea
+    backgroundColor: p.texto === "#ffffff" ? "#ff4d6d" : p.texto, 
+    color: '#fff', 
+    border: 'none' 
+  }}
+>
+  {pagina === 72 ? "Abrir Corazón" : "Siguiente"}
+</button>
           </div>
         </div>
       ) : (
