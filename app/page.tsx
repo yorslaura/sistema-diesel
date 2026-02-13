@@ -80,7 +80,7 @@ const LibroJudith = () => {
     { t: "Día 55: Persistencia", c: "Aun así, seguí. El amor no se trata de que sea fácil, sino de que sea real.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 56: Luz Lejana", c: "Vi un pequeño destello al fondo. No sabía si era la salida o una ilusión.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 57: Fatiga", c: "Mis piernas pesaban. El laberinto parecía no tener fin. Pero tu estabas al final.", bg: "#90a4ae", texto: "#1c313a" },
-    { t: "Día 58: El Desvío", c: "Casi tomo otro camino, pero me obligué a volver. Mi único destino eres tú.", bg: "#90a4ae", texto: "#1c313a" },
+    { t: "Día 58: El Desvío", c: "Casi tomo regreso del camino, pero me obligué a volver. Mi único destino eres tú.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 59: Agonía de Enero", c: "Terminaba el mes más largo de mi vida. Esperando que febrero trajera algo de calor.", bg: "#90a4ae", texto: "#1c313a" },
 
     // --- FEBRERO: LA ARMADURA Y EL FINAL (60-72) ---
