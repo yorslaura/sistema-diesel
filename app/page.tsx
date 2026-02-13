@@ -79,7 +79,7 @@ const LibroJudith = () => {
     { t: "Día 55: Persistencia", c: "Aun así, seguí. El amor no se trata de que sea fácil, sino de que sea real.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 56: Luz Lejana", c: "Vi un pequeño destello al fondo. No sabía si era la salida o una ilusión.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 57: Fatiga", c: "Mis piernas pesaban. El laberinto parecía no tener fin. Pero Judith estaba al final.", bg: "#90a4ae", texto: "#1c313a" },
-    { t: "Día 58: El Desvío", c: "Casi tomo otro camino, pero me obligué a volver. Mi único destino eres tú.", bg: "#90a4ae", texto: "#1c313a" },
+    { t: "Día 58: El Desvío", c: "Queria regresar del camino, pero me obligué a volver. Mi único destino eres tú.", bg: "#90a4ae", texto: "#1c313a" },
     { t: "Día 59: Agonía de Enero", c: "Terminaba el mes más largo de mi vida. Esperando que febrero trajera algo de calor.", bg: "#90a4ae", texto: "#1c313a" },
 
     // --- FEBRERO: LA ARMADURA Y EL FINAL (60-72) ---
@@ -151,7 +151,7 @@ const LibroJudith = () => {
         <div style={{ maxWidth: '600px', backgroundColor: '#fff', padding: '60px', borderRadius: '40px', textAlign: 'center', boxShadow: '0 20px 60px rgba(216, 27, 96, 0.3)', animation: 'fadeUp 1s' }}>
           <h1 style={{ color: '#d81b60', fontSize: '2.5rem' }}>14 de Febrero</h1>
           <p style={{ fontSize: '1.3rem', color: '#333', marginBottom: '30px' }}>
-            <strong>Judith,</strong> eres la persona más valiente y hermosa que he conocido en mi vida.
+            <strong>Mi pedacito de coconut,</strong> eres la persona más valiente y hermosa que he conocido en mi vida.
           </p>
           <div style={{ textAlign: 'left', color: '#555', lineHeight: '1.7', marginBottom: '30px' }}>
             <p>Ya no oirás mis "quejas", porque esta armadura es pesada. Pero aquí sigo, esforzándome para que mis palabras no sean solo eso.</p>
