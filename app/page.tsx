@@ -1,182 +1,165 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-// Interfaz para la estructura de la carta
-interface CartaDiaria {
+interface PaginaCarta {
   titulo: string;
   contenido: string;
-  clima: string; // Para cambiar el color de fondo poéticamente
-  colorTexto: string;
+  clima: string;
+  color: string;
 }
 
-const LibroEterno = () => {
+const LibroSagrado = () => {
   const [pagina, setPagina] = useState(0);
   const [final, setFinal] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // --- MOTOR DE GENERACIÓN POÉTICA ---
-  // Genera 73 textos largos simulando hojas A4
-  const generarCartas = (): CartaDiaria[] => {
-    const cartas: CartaDiaria[] = [];
+  // Al cambiar de página, volvemos arriba del "scroll" de la hoja
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [pagina, final]);
+
+  // --- CONSTRUCTOR DE NARRATIVA EXTENSA (73 PÁGINAS ÚNICAS) ---
+  const generarLibro = (): PaginaCarta[] => {
+    const paginas: PaginaCarta[] = [];
     
-    const temasInicio = [
-      "Hablemos de cómo el destino se disfraza de azar en un servidor de juegos.",
-      "Construir un universo en la distancia requiere más valor que cruzar un océano.",
-      "Fuiste la frecuencia que mi radar no esperaba detectar jamás."
+    // Diccionarios de conceptos para evitar repeticiones
+    const inicios = [
+      "Hoy me desperté pensando en la arquitectura de lo invisible...",
+      "Escribo esto desde el borde de un pensamiento que no me deja dormir...",
+      "Hay una frecuencia en el silencio que solo tú y yo logramos descifrar...",
+      "Me pregunto si los pixeles donde nos conocimos sabían lo que vendría...",
+      "A veces el alma necesita vaciarse en el papel para no colapsar..."
     ];
 
-    const temasAbismo = [
-      "El amor no es solo luz; es aprender a caminar por el abismo sin soltar tu mano.",
-      "A veces siento que mis palabras caen en un pozo sin fondo, buscando tu eco.",
-      "La fragilidad es el precio que pagamos por permitirnos sentir el infinito."
+    const conceptosAmor = [
+      "tu risa es un mapa de relieves que nunca termino de explorar.",
+      "el futuro contigo se siente como un edificio de cristal en medio de una tormenta.",
+      "mi niño interior dejó de tener miedo a la oscuridad cuando escuchó tu voz por primera vez.",
+      "amarte fue como aprender un idioma que solo se habla en los sueños.",
+      "cada rincón de mi sistema tiene un rastro de tu código, de tu esencia."
     ];
 
-    const temasFuturo = [
-      "Dibujé planos de una casa que solo existe en mis sueños, donde tus ojos me miran de frente.",
-      "Quise ser el arquitecto de un nosotros que desafiara la geografía y el tiempo.",
-      "Te amé con la intención de que cada mañana de los próximos cincuenta años tuviera tu nombre."
+    const conceptosAbismo = [
+      "el laberinto se ha vuelto más denso, y las espinas ya no solo rozan, ahora marcan.",
+      "los muros que levantaste no me detienen por su altura, sino por su silencio.",
+      "la fragilidad de mi armadura es el secreto que mejor guardo bajo este metal.",
+      "busqué mi lugar en el mapa de tus días y solo encontré desiertos de incertidumbre.",
+      "mis inseguridades no eran quejas, eran gritos de un náufrago buscando tierra firme."
     ];
 
     for (let i = 1; i <= 73; i++) {
-      let titulo = `Día ${i}: `;
-      let contenido = "";
-      let clima = "#fff5f7"; // Rosa suave inicial
-      let colorTexto = "#c9184a";
+      let fnd = "#fff5f7"; // Rosa suave
+      let txt = "#c9184a";
+      let etapa = "";
+      let cuerpo = "";
 
-      // Lógica de fases para el contenido extenso (A4)
-      if (i <= 20) {
-        titulo += "La Génesis del Color";
-        contenido = `${temasInicio[i % 3]} Recuerdo aquel 4 de diciembre como el momento en que mi realidad se fracturó para dejar entrar tu luz. No era solo un juego, era el inicio de una arquitectura emocional. Te imaginaba en cada rincón de mi habitación, como si tu voz pudiera materializar muros de protección. Sentía que te amaba con una pureza casi infantil, sin miedo al abismo que nos separaba. Cada palabra tuya era un ladrillo en la torre que estaba construyendo para llegar a ti. No había muros entonces, solo un horizonte despejado y la promesa de un 'mañana' que parecía inevitable. Quería un futuro donde no tuviéramos que despedirnos de una pantalla, sino de la luz del día en la misma habitación. Mi niño interior corría hacia ti sin saber que el camino era largo, pero con la certeza de que tu abrazo sería el refugio final. Eres, Judith, la muchacha más linda que la tierra ha visto caminar, incluso si solo te veo a través de este cristal.\n\n` + 
-                    "Pienso en cómo el amor se vuelve una religión cuando la distancia es el único dios al que rezamos. Cada noche, antes de dormir, repasaba nuestras conversaciones como si fueran escrituras sagradas, buscando señales de que este puente que construyo tiene un destino real.";
+      // FASE 1: DICIEMBRE (EL COLOR)
+      if (i <= 27) {
+        etapa = "La Génesis del Color";
+        cuerpo = `${inicios[i % 5]} Aquel 4 de diciembre el mundo dejó de ser plano. ${conceptosAmor[i % 5]} No me enamoré de lo fácil, me enamoré de la posibilidad de ser infinito a tu lado. Recuerdo cómo mis manos temblaban al escribirte, cómo cada mensaje era un puente que lanzaba al vacío esperando que tú estuvieras del otro lado. Quería que mi vida tuviera tu tono, ese brillo que solo tú emanas. Fuimos dos extraños construyendo un imperio en la distancia, ignorando que el tiempo sería nuestro juez más severo. Te amo con una profundidad que asusta, con una devoción que no entiende de razones ni de muros. Eres la muchacha más linda que la tierra ha parido, y mi único deseo era ser el guardián de tu sonrisa.\n\n` + 
+                 `Pienso en el futuro y veo techos altos, ventanas que dan a un jardín que cuidaremos juntos. Veo una vida donde el 'nosotros' no sea una petición, sino una ley natural. Pero mientras llego ahí, sigo aquí, flotando en este sentimiento que me eleva y me consume a la vez. No hay espacio en esta hoja para describir cómo mi alma se estira para alcanzarte.`;
       } 
-      else if (i <= 50) {
-        clima = "#eceff1"; // Gris niebla
-        colorTexto = "#455a64";
-        titulo += "El Laberinto de Espejos";
-        contenido = `${temasAbismo[i % 3]} Enero llegó con una niebla que no pedí. Los muros que antes eran transparentes se volvieron de piedra fría. Empecé a notar que mis sentimientos, mis inseguridades, eran tratados como 'quejas', como ruidos molestos en tu melodía. Me volví frágil, Judith. Me quité la armadura creyendo que así podrías verme mejor, pero solo logré que las espinas del laberinto se clavaran más profundo. Grité desde mi silencio, esperando que tu brillo me sacara de aquí. Sigo proyectando un futuro a tu lado, pero a veces siento que estoy dibujando en el agua. El abismo entre lo que siento y lo que recibo se ha vuelto un laberinto gigante. Camino rápido para no hundirme, pero el aire se vuelve seco. ¿Cómo no celar lo que amo? ¿Cómo no temer perderte si me dices que te irías sin remordimientos? Me hice el sordo, pero las grietas en el suelo ya no se pueden ocultar.\n\n` +
-                    "Me pregunto si el amor es esta lucha constante contra muros invisibles, o si simplemente me acostumbré a la oscuridad del laberinto pensando que era tu sombra protegiéndome. Sigo aquí, quitándome capas, quedando en carne viva ante tu indiferencia.";
+      // FASE 2: ENERO (LA NIEBLA)
+      else if (i <= 59) {
+        fnd = "#eceff1";
+        txt = "#455a64";
+        etapa = "El Laberinto de la Indiferencia";
+        cuerpo = `${inicios[i % 5]} La niebla se instaló en el pasillo y dejé de ver tus manos. ${conceptosAbismo[i % 5]} Empecé a sentir que mis palabras eran ecos en una habitación vacía. No es el tiempo lo que falta, Judith, es la mirada. Es sentir que en tu horizonte yo soy solo una mota de polvo y no el sol que intentaba ser. Me volví frágil, me quité las capas de protección esperando que al verme así, sin nada, decidirías darme ese lugar que tanto busqué. Pero el respeto no es una moneda que se pide, es un altar que se construye entre dos. El laberinto creció y las grietas bajo mis pies me recordaron que el amor, cuando es unidireccional, termina por romper al que más siente.\n\n` + 
+                 `Sigo caminando, aunque me pinche con las espinas que ahora cubren el suelo. No me quejo, solo narro mi dolor para que entiendas que detrás de cada 'celo' había un miedo atroz a que este edificio se cayera. Y se está cayendo, Judith. Las grietas son profundas y el aire aquí dentro se ha vuelto irrespirable.`;
       } 
+      // FASE 3: FEBRERO (LA ARMADURA)
       else {
-        clima = "#cfd8dc"; // Gris profundo/Azulado
-        colorTexto = "#263238";
-        titulo += "La Armadura de Cristal";
-        contenido = `${temasFuturo[i % 3]} He llegado a febrero con una armadura que pesa tanto como mis recuerdos. Ya no vuelo, ahora camino con pies de plomo sobre un suelo de espinas. Me puse este metal para que no veas cómo me rompo, para que mis 'quejas' no te alcancen más. Pero detrás de este acero, sigo siendo el hombre que te mira con una devoción que asusta. He trepado muros y me he lastimado las manos solo para ver la claridad de tus ojos, aunque esos ojos ya no busquen los míos. El laberinto sigue ahí, negro y espeso, pero yo sigo avanzando hacia ti. No busco un camino fácil, nunca lo quise. Amo este camino porque te tiene al final, o al menos eso me digo para no sentarme a esperar que la niebla me consuma por completo. Me protejo de tus palabras que duelen, pero no me protejo de tu ausencia, porque esa es la que realmente me mata.\n\n` +
-                    "A veces me detengo y miro hacia atrás. El camino se ha cerrado. No hay vuelta atrás, solo queda seguir subiendo, aunque mis fuerzas se agoten y mi voz se pierda en el eco de esta armadura fría.";
+        fnd = "#cfd8dc";
+        txt = "#263238";
+        etapa = "El Silencio del Acero";
+        cuerpo = `${inicios[i % 5]} Me puse la armadura. Es pesada, fría y no deja que mis quejas salgan. Pero tampoco deja que tu luz entre como antes. ${conceptosAbismo[i % 5]} Camino hacia ti por inercia, por un amor que se niega a morir aunque esté herido de muerte. Trepé muros y me lastimé el alma solo para ver la claridad de tus ojos, pero me encontré con que tu mirada ya no me pertenece. Estás ahí, pero no estás conmigo. Veo el laberinto negro que te rodea y quiero salvarte, pero me doy cuenta de que yo también necesito ser salvado. Mi armadura me protege de tus palabras que duelen, pero me aísla de la Judith que algún día conocí en aquel juego.\n\n` + 
+                 `Este camino no fue fácil, y nunca pedí que lo fuera. Pedí respeto, pedí un lugar que nunca llegó, y entendí que si tengo que pedirlo, es porque ese lugar nunca estuvo destinado para mí. Aquí sigo, avanzando en la oscuridad, esperando que mañana el sol tenga la decencia de salir una última vez.`;
       }
 
-      cartas.push({ titulo, contenido, clima, colorTexto });
+      paginas.push({ titulo: `Página ${i}: ${etapa}`, contenido: cuerpo, clima: fnd, color: txt });
     }
-    return cartas;
+    return paginas;
   };
 
-  const listaCartas = generarCartas();
-  const actual = listaCartas[pagina];
+  const libro = generarLibro();
+  const actual = libro[pagina];
+
+  const reiniciar = () => {
+    setFinal(false);
+    setPagina(0);
+  };
 
   return (
     <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: actual.clima, 
-      transition: 'all 1s ease',
-      display: 'flex', 
-      flexDirection: 'column',
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      padding: '40px 20px',
-      fontFamily: "'Times New Roman', serif"
+      minHeight: '100vh', backgroundColor: actual.clima, transition: 'all 1s ease',
+      display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', fontFamily: "'Times New Roman', serif"
     }}>
       
       {!final ? (
         <div style={{
-          width: '100%',
-          maxWidth: '800px', // Ancho tipo hoja A4
-          backgroundColor: '#fff',
-          padding: '60px',
-          borderRadius: '5px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-          position: 'relative',
-          borderLeft: `1px solid #ddd`,
-          maxHeight: '85vh',
-          overflowY: 'auto', // Permite leer textos largos
+          width: '100%', maxWidth: '750px', backgroundColor: '#fff', borderRadius: '4px',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', height: '90vh'
         }}>
-          {/* Decoración de hoja A4 */}
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '5px', background: actual.colorTexto, opacity: 0.3 }}></div>
-          
-          <header style={{ textAlign: 'right', marginBottom: '40px', color: '#999' }}>
-            <p>{actual.titulo}</p>
-            <p>Nazca, Perú - 2026</p>
-          </header>
+          {/* Header de la Hoja */}
+          <div style={{ padding: '40px 60px 20px', borderBottom: '1px solid #eee', textAlign: 'right', color: '#999' }}>
+            <p style={{ margin: 0 }}>{actual.titulo}</p>
+            <p style={{ margin: 0, fontSize: '0.8rem' }}>Nazca, Perú | 14 de Febrero, 2026</p>
+          </div>
 
-          <article style={{ color: actual.colorTexto, lineHeight: '2', fontSize: '1.2rem', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
-            {actual.contenido}
-            {/* Relleno visual para simular A4 larga si el texto fuera corto */}
-            <div style={{ height: '100px' }}></div>
-          </article>
+          {/* Cuerpo de la Carta con Scroll */}
+          <div ref={scrollRef} style={{ padding: '20px 60px', overflowY: 'auto', flex: 1, textAlign: 'justify' }}>
+            <p style={{ color: actual.color, lineHeight: '2.2', fontSize: '1.2rem', whiteSpace: 'pre-wrap' }}>
+              {actual.contenido}
+            </p>
+            <div style={{ height: '50px' }}></div>
+          </div>
 
-          <footer style={{ 
-            marginTop: '40px', 
-            display: 'flex', 
-            justifyContent: 'space-between',
-            position: 'sticky',
-            bottom: '-40px',
-            backgroundColor: '#fff',
-            padding: '20px 0'
-          }}>
+          {/* Footer de Navegación */}
+          <footer style={{ padding: '20px 60px', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #eee' }}>
             <button onClick={() => setPagina(pagina - 1)} disabled={pagina === 0} style={btnStyle}>Anterior</button>
-            <span style={{ color: '#ccc' }}>Página {pagina + 1} de 73</span>
+            <span style={{ fontSize: '0.8rem', color: '#ccc', alignSelf: 'center' }}>{pagina + 1} de 73</span>
             <button 
               onClick={() => pagina === 72 ? setFinal(true) : setPagina(pagina + 1)} 
-              style={{ ...btnStyle, backgroundColor: actual.colorTexto, color: '#fff', border: 'none' }}
+              style={{ ...btnStyle, backgroundColor: actual.color === "#ffffff" ? "#263238" : actual.color, color: '#fff' }}
             >
-              {pagina === 72 ? "Cerrar Libro" : "Siguiente"}
+              {pagina === 72 ? "Llegar al Final" : "Siguiente página"}
             </button>
           </footer>
         </div>
       ) : (
-        /* PÁGINA FINAL: LA DESPEDIDA PROFUNDA */
+        /* PÁGINA FINAL: EL CIERRE DISOCIADO */
         <div style={{ 
-          maxWidth: '600px', 
-          backgroundColor: '#fff', 
-          padding: '80px 40px', 
-          borderRadius: '10px', 
-          textAlign: 'center', 
-          boxShadow: '0 20px 60px rgba(0,0,0,0.05)',
-          animation: 'fadeIn 2s'
+          maxWidth: '650px', backgroundColor: '#fff', padding: '80px 50px', borderRadius: '15px', 
+          textAlign: 'center', boxShadow: '0 30px 60px rgba(0,0,0,0.1)', animation: 'slideUp 1.5s' 
         }}>
-          <h1 style={{ color: '#263238', marginBottom: '40px', fontSize: '1.8rem' }}>14 de Febrero</h1>
+          <h1 style={{ color: '#263238', marginBottom: '40px' }}>14 de Febrero</h1>
           
-          <div style={{ textAlign: 'justify', lineHeight: '2', color: '#444', fontStyle: 'italic', fontSize: '1.2rem' }}>
-            <p>Gracias por todo lo que fuiste y por lo que intentamos ser. He caminado este laberinto con la armadura rota y el corazón abierto, siempre buscándote. </p>
-            <p>Hoy entiendo que el amor no solo es resistir, sino también aceptar. Acepto que tus ojos son el paisaje más hermoso que he visto, pero que ese paisaje hoy mira hacia otro horizonte donde yo no existo. No hay reproche, solo una gratitud infinita por haberme permitido amarte.</p>
-            <p>Te amo, Judith. Cuido con mi vida ese regalito de dos orejas grandes que tengo aquí guardado para ti, un pequeño guardián de lo que alguna vez soñamos. Quizá en otra vida, nuestras miradas sí logren encontrarse en el centro de este abismo.</p>
+          <div style={{ textAlign: 'justify', lineHeight: '2', color: '#333', fontSize: '1.15rem', fontStyle: 'italic' }}>
+            <p>Gracias por todo lo que fuimos, aunque haya sido en el silencio de este laberinto. </p>
+            <p>He entendido que el amor no se mide en los minutos que sobran, sino en el lugar que se otorga sin que el otro tenga que suplicar por él. No es la falta de tu tiempo lo que hoy me detiene, Judith, sino la triste claridad de que mi trono en tu vida fue siempre una silla prestada, un espacio que tuve que pedir y que nunca terminó de pertenecerme por derecho propio.</p>
+            <p>Me enamoré de tus ojos, pero hoy acepto que esos ojos miran hacia un horizonte donde yo no soy más que parte del paisaje, no el destino. Te amo infinitamente, y por ese mismo amor, te libero de mis "quejas" y de mi presencia.</p>
+            <p>Cuidaré con mi alma ese regalito de dos orejas grandes que tengo aquí conmigo; él será el testigo de lo que quise construir y no pudo ser. Feliz San Valentín, mi señora esposa.</p>
           </div>
 
-          <h3 style={{ marginTop: '50px', color: '#d81b60' }}>Adiós, mi señora esposa.</h3>
-
-          <button 
-            onClick={() => { setFinal(false); setPagina(0); }} 
-            style={{ marginTop: '40px', background: 'none', border: 'none', textDecoration: 'underline', color: '#aaa', cursor: 'pointer' }}
-          >
-            Volver al inicio del camino
+          <button onClick={reiniciar} style={{ marginTop: '50px', background: 'none', border: 'none', textDecoration: 'underline', color: '#d81b60', cursor: 'pointer', fontWeight: 'bold' }}>
+            Cerrar el libro y volver al inicio
           </button>
         </div>
       )}
 
       <style>{`
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+        button:disabled { opacity: 0.2; cursor: not-allowed; }
       `}</style>
     </div>
   );
 };
 
 const btnStyle = {
-  padding: '10px 25px',
-  borderRadius: '2px',
-  border: '1px solid #eee',
-  cursor: 'pointer',
-  fontSize: '0.9rem',
-  transition: '0.3s'
+  padding: '12px 30px', borderRadius: '5px', border: '1px solid #eee', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', transition: '0.3s'
 };
 
-export default LibroEterno;
+export default LibroSagrado;
