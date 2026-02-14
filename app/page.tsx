@@ -2,61 +2,111 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-// Definimos la estructura para que TypeScript no de errores
-interface HojaLibro {
+// Interfaz para que TypeScript no de errores
+interface PaginaCarta {
   titulo: string;
-  texto: string;
+  contenido: string;
   fondo: string;
-  color: string;
+  colorTexto: string;
 }
 
-const LibroJudithFinal = () => {
+const LibroParaJudith = () => {
   const [pagina, setPagina] = useState(0);
   const [mostrarFinal, setMostrarFinal] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Reiniciar scroll al cambiar de página
+  // Reinicia el scroll al cambiar de página
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [pagina, mostrarFinal]);
 
-  // --- LAS 73 CARTAS ÚNICAS ---
-  const diario: HojaLibro[] = [
-    { titulo: "04 Dic: El Comienzo", texto: "Todo inició en un juego, Judith. Entre pixeles y comandos, mi mundo se detuvo para encontrarte. No sabía que una pantalla podía sostener tanto peso emocional, ni que tu nombre se convertiría en mi palabra favorita.", fondo: "#fff5f7", color: "#c9184a" },
-    { titulo: "05 Dic: La Frecuencia", texto: "Buscaba tu voz entre el ruido. Había una sintonía extraña, como si nuestras almas hubieran jugado antes en otras vidas. Me sentía cómodo, me sentía en casa leyéndote.", fondo: "#fff5f7", color: "#c9184a" },
-    { titulo: "06 Dic: El Eco", texto: "Empecé a notar que mis días tenían más luz si aparecías. El abismo de la distancia no asustaba; al contrario, era un lienzo donde dibujaba tu risa.", fondo: "#fff5f7", color: "#c9184a" },
-    { titulo: "14 Dic: El Color", texto: "Hoy dejé que mi niño interior saliera para amarte sin reproches. Mi vida se pintó de un tono hermoso, vibrante. Sonaba 'Again' de Noah Cyrus y yo sentía que podía flotar sobre cualquier muro. No había miedo, solo una entrega absoluta a este brillo espectacular que emanabas.", fondo: "#fce4ec", color: "#ad1457" },
-    { titulo: "20 Dic: El Plan", texto: "Caminaba hacia ti ignorando las sombras. Creía que el amor era un puente indestructible. Te veía en cada rincón de mi futuro, como el pilar de un edificio de cristal.", fondo: "#fce4ec", color: "#ad1457" },
-    { titulo: "31 Dic: El Brindis", texto: "Pasamos con nuestras familias, pero mi mente estaba contigo. Verte feliz me hacía bien. Te deseé un año de luz, soñando con que este 2026 fuera nuestro año definitivo.", fondo: "#f8bbd0", color: "#880e4f" },
-    { titulo: "05 Ene: Los Muros", texto: "Los muros que antes eran invisibles empezaron a crecer. Grité desde la distancia que seguiría avanzando mientras tú me lo permitieras. Pero el aire se sentía más seco, más pesado.", fondo: "#eceff1", color: "#455a64" },
-    { titulo: "15 Ene: El Abismo", texto: "Me volví frágil para elevarme sobre los obstáculos. Fue mi error, quizá. Sonaba 'Sol' de William y yo seguía quitándome capas para que pudieras verme, quedando en carne viva ante tu indiferencia.", fondo: "#cfd8dc", color: "#37474f" },
-    { titulo: "25 Ene: El Laberinto", texto: "Entré en un laberinto gigante. Las espinas me rozaban y yo caminaba rápido para no hundirme. Buscaba la salida, buscaba tu mirada, pero tus ojos ya no me buscaban a mí.", fondo: "#b0bec5", color: "#263238" },
-    { titulo: "02 Feb: La Armadura", texto: "Me puse una armadura de acero pesado. Ya no me viste frágil. Decidí protegerme para seguir avanzando. Te recordaba riendo para no rendirme, pero el metal ya no me dejaba sentir tu calor.", fondo: "#b39ddb", color: "#311b92" },
-    { titulo: "10 Feb: La Niebla", texto: "Una niebla espesa lo cubrió todo. No te oía, Judith. Ando en este silencio frío y pesado, confiando en que mi armadura resistirá un poco más, esperando que tu respirar disperse este aire seco.", fondo: "#9575cd", color: "#512da8" },
-    { titulo: "13 Feb: El Último Paso", texto: "Llegué a la cima del muro. Vi la claridad de tus ojos, pero noté que veías el laberinto negro, no a mí. Mañana se acaba el viaje, y aquí sigo, con el alma cansada pero llena de ti.", fondo: "#7e57c2", color: "#ffffff" }
+  // --- AQUÍ ESTÁN LAS 73 PÁGINAS PARA RELLENAR ---
+  const diario: PaginaCarta[] = [
+    { titulo: "04 Dic: El Inicio", contenido: "Escribe aquí cómo empezó todo...", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 2", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 3", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 4", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 5", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 6", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 7", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 8", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 9", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "Día 10", contenido: "", fondo: "#fff5f7", colorTexto: "#c9184a" },
+    { titulo: "14 Dic: El Color", contenido: "Escribe aquí sobre el día del niño interior y la música de Noah Cyrus...", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 12", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 13", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 14", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 15", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 16", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 17", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 18", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 19", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 20", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 21", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 22", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 23", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 24", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 25", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 26", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "Día 27", contenido: "", fondo: "#fce4ec", colorTexto: "#ad1457" },
+    { titulo: "31 Dic: Fin de Año", contenido: "Escribe aquí sobre la fiesta y tus deseos para ella...", fondo: "#f8bbd0", colorTexto: "#880e4f" },
+    { titulo: "01 Ene", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 30", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 31", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 32", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 33", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 34", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 35", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 36", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 37", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 38", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 39", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 40", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 41", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 42", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 43", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 44", contenido: "", fondo: "#eceff1", colorTexto: "#455a64" },
+    { titulo: "Día 45", contenido: "Enero: La fragilidad y Sol de William...", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 46", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 47", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 48", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 49", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 50", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 51", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 52", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 53", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 54", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 55", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 56", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 57", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 58", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 59", contenido: "", fondo: "#cfd8dc", colorTexto: "#37474f" },
+    { titulo: "Día 60", contenido: "Febrero: La voz y la armadura...", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 61", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 62", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 63", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 64", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 65", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 66", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 67", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 68", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 69", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 70", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 71", contenido: "", fondo: "#b39ddb", colorTexto: "#311b92" },
+    { titulo: "Día 72", contenido: "Mañana es el gran día...", fondo: "#b39ddb", colorTexto: "#311b92" },
   ];
-
-  // Rellenar dinámicamente para que sean 73 únicas
-  for (let i = diario.length; i < 73; i++) {
-    diario.push({
-      titulo: `Día ${i + 1}`,
-      texto: `Sigo caminando por este sendero que construimos. A veces la niebla es densa, pero el recuerdo de tu sonrisa es el único mapa que me queda. No es fácil amar así, en el abismo, pero por ti he aprendido a ser arquitecto de imposibles.`,
-      fondo: i < 30 ? "#fff5f7" : (i < 60 ? "#eceff1" : "#b39ddb"),
-      color: i < 30 ? "#c9184a" : (i < 60 ? "#455a64" : "#311b92")
-    });
-  }
 
   const actual = diario[pagina];
 
-  const btnEstilo: React.CSSProperties = {
+  // Estilo de los botones para que no se pierdan
+  const btnStyle: React.CSSProperties = {
     padding: '12px 25px',
     borderRadius: '30px',
     border: '1px solid #ddd',
     cursor: 'pointer',
     fontWeight: 'bold',
-    transition: '0.3s',
     backgroundColor: '#fff',
-    color: actual.color === "#ffffff" ? "#512da8" : actual.color
+    color: actual.colorTexto === "#ffffff" ? "#512da8" : actual.colorTexto
   };
 
   return (
@@ -73,42 +123,47 @@ const LibroJudithFinal = () => {
       
       {!mostrarFinal ? (
         <div style={{
-          width: '100%', maxWidth: '700px', backgroundColor: '#fff', borderRadius: '5px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.1)', height: '80vh', display: 'flex', flexDirection: 'column'
+          width: '100%', maxWidth: '750px', backgroundColor: '#fff', borderRadius: '5px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)', height: '85vh', display: 'flex', flexDirection: 'column'
         }}>
+          {/* Cabecera */}
           <div style={{ padding: '30px', borderBottom: '1px solid #eee', textAlign: 'right', color: '#999' }}>
             <p>{actual.titulo}</p>
           </div>
 
+          {/* Cuerpo con Scroll para tus textos largos */}
           <div ref={scrollRef} style={{ padding: '40px', overflowY: 'auto', flex: 1, textAlign: 'justify' }}>
-            <p style={{ color: actual.color === "#ffffff" ? "#333" : actual.color, lineHeight: '2', fontSize: '1.2rem' }}>
-              {actual.texto}
+            <p style={{ color: actual.colorTexto === "#ffffff" ? "#333" : actual.colorTexto, lineHeight: '2.2', fontSize: '1.2rem' }}>
+              {actual.contenido}
             </p>
+            <div style={{ height: '50px' }}></div>
           </div>
 
+          {/* Navegación */}
           <footer style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #eee' }}>
-            <button onClick={() => setPagina(pagina - 1)} disabled={pagina === 0} style={btnEstilo}>Atrás</button>
-            <span style={{ alignSelf: 'center', color: '#ccc' }}>{pagina + 1} de 73</span>
+            <button onClick={() => setPagina(pagina - 1)} disabled={pagina === 0} style={btnStyle}>Atrás</button>
+            <span style={{ alignSelf: 'center', color: '#ccc' }}>Página {pagina + 1} de 73</span>
             <button 
-              onClick={() => pagina === 72 ? setMostrarFinal(true) : setPagina(pagina + 1)} 
-              style={{ ...btnEstilo, backgroundColor: actual.color === "#ffffff" ? "#512da8" : actual.color, color: '#fff' }}
+              onClick={() => pagina === 71 ? setMostrarFinal(true) : setPagina(pagina + 1)} 
+              style={{ ...btnStyle, backgroundColor: actual.colorTexto === "#ffffff" ? "#512da8" : actual.colorTexto, color: '#fff' }}
             >
-              {pagina === 72 ? "Cerrar Libro" : "Siguiente"}
+              {pagina === 71 ? "Llegar al Final" : "Siguiente"}
             </button>
           </footer>
         </div>
       ) : (
-        /* PÁGINA FINAL: LA CARTA DE DESPEDIDA PROFUNDA */
+        /* --- PÁGINA 73: EL FINAL --- */
         <div style={{ 
-          maxWidth: '600px', backgroundColor: '#fff', padding: '60px', borderRadius: '15px', 
-          textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.1)', animation: 'aparecer 1s' 
+          maxWidth: '650px', backgroundColor: '#fff', padding: '60px', borderRadius: '15px', 
+          textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.1)', animation: 'aparecer 1.5s' 
         }}>
           <h1 style={{ color: '#2c3e50', marginBottom: '30px' }}>14 de Febrero</h1>
-          <div style={{ textAlign: 'justify', lineHeight: '2.1', color: '#444', fontStyle: 'italic', fontSize: '1.1rem' }}>
-            <p>Gracias por todo, Judith. Por los colores de diciembre y la armadura de febrero. </p>
-            <p>He aprendido que el amor no se trata de la falta de tiempo o de la distancia, sino del lugar que se otorga en el alma. Algún día pedí respeto y ese lugar que creí merecer, pero hoy entiendo que si hay que pedirlo, es porque ese espacio nunca estuvo destinado para mí. </p>
-            <p>No hay reproches por tus silencios, solo la triste claridad de que mis ojos siempre te buscaron como su único hogar, mientras los tuyos miraban hacia un horizonte donde yo ya no existo. Te amo infinitamente, y por ese amor, hoy dejo de pedir lo que no nace de ti.</p>
-            <p>Cuido conmigo ese regalito de dos orejas grandes, guardado para cuando llegues o yo vaya. Él será el testigo de lo que quise construir. Adiós, mi señora esposa.</p>
+          <div style={{ textAlign: 'justify', lineHeight: '2.2', color: '#333', fontStyle: 'italic', fontSize: '1.2rem' }}>
+            <p>Gracias por todo, Judith. Por los colores de diciembre y la armadura de febrero.</p>
+            <p>He aprendido que el amor no se trata de la falta de tiempo o de la distancia, sino del lugar que se otorga en el alma. Algún día pedí respeto y ese lugar que creí merecer, pero hoy entiendo que si hay que pedirlo, es porque ese espacio nunca estuvo destinado para mí.</p>
+            <p>Ya no oirás mis quejas, Judith. He entendido que mis palabras eran ruido en un horizonte donde tus ojos ya no me buscan. Acepto que mi silueta ya no encaja en tu mirada, y por ese mismo amor que te tengo, hoy decido dejar de suplicar por lo que no nace de ti.</p>
+            <p>Te amo infinitamente. Cuido conmigo ese regalito de dos orejas grandes, guardado para cuando llegues o yo vaya. Él será el único testigo de lo que quise construir contigo y no pudo ser.</p>
+            <p style={{ textAlign: 'center', marginTop: '30px', fontWeight: 'bold' }}>Adiós, mi señora esposa. ❤️</p>
           </div>
           <button onClick={() => { setMostrarFinal(false); setPagina(0); }} style={{ marginTop: '40px', border: 'none', background: 'none', textDecoration: 'underline', cursor: 'pointer', color: '#aaa' }}>
             Volver a leer
@@ -117,7 +172,7 @@ const LibroJudithFinal = () => {
       )}
 
       <style>{`
-        @keyframes aparecer { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
       `}</style>
@@ -125,4 +180,4 @@ const LibroJudithFinal = () => {
   );
 };
 
-export default LibroJudithFinal;
+export default LibroParaJudith;
